@@ -1,0 +1,13 @@
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+videos/
+
+.env
+
+test.py
+another.py
+e.js
