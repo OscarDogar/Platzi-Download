@@ -18,11 +18,7 @@ def createCommands (info):
     folder = 'cd videos &&'
     i = 0
     for key, value in info.items():
-        if (i==1) :
-            commands.append('{} ffmpeg -i {}d -c copy "{}.mp4"'.format(folder, value, key))
-        else:
-            commands.append('{} ffmpeg -i {} -c copy "{}.mp4"'.format(folder, value, key))
-        i = i + 1
+        commands.append('{} ffmpeg -i {} -c copy "{}.mp4"'.format(folder, value, key))
     return commands
 
 def callProcess(info):
