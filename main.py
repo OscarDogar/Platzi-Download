@@ -49,37 +49,48 @@ if __name__ == "__main__":
         By.XPATH, '//*[@id="login-v2"]/div/div/div/div[3]/form/button')
     submitBtn.click()
 
-    # Send a request to the website and let it load
+    checkCaptcha = driver.find_elements(By.CLASS_NAME, 'StudentsHome-wrapper')
+    while not checkCaptcha:
+        checkCaptcha = driver.find_elements(By.CLASS_NAME,
+                                            'StudentsHome-wrapper')
 
-    driver.get(
-        "https://platzi.com/clases/3208-programacion-basica/52069-que-es-platzi/"
-    )
+    driver.get(os.environ.get('START_DOWNLOAD_URL'))
     #Check the name of the video
-    check = driver.find_elements(
-        By.XPATH,
-        '//*[@id="material-view"]/div[2]/div[1]/div[2]/div/div[1]/div[3]/div/h1'
-    )
+    check = driver.find_elements(By.CLASS_NAME, 'material-video')
     #get the number of the video
-    number = driver.find_element(
-        By.XPATH,
-        '//*[@id="material-view"]/div[2]/div[1]/div[2]/div/div[1]/div[3]/div/span'
-    ).text.split("/")
+    # number = driver.find_element(
+    #     By.CLASS_NAME, 'Header-class-title').text.split("\n")[1].split("/")
 
-    while number[0] != number[1] and not len(check) == 0:
+    while not len(check) == 0:
         #Check the name of the video
-        check = driver.find_elements(
-            By.XPATH,
-            '//*[@id="material-view"]/div[2]/div[1]/div[2]/div/div[1]/div[3]/div/h1'
-        )
+        check = driver.find_elements(By.CLASS_NAME, 'material-video')
+        if len(check) == 0:
+            quiz = driver.find_elements(By.CLASS_NAME,
+                                        'StartQuizOverview-buttons')
+            lecture = driver.find_elements(By.CLASS_NAME, 'material-lecture')
+            content = driver.find_elements(By.CLASS_NAME, 'MaterialView-video')
+            if (len(quiz) != 0):
+                jumpNext = driver.find_element(By.CLASS_NAME,
+                                               'StartQuizOverview-btn--skip')
+                jumpNext.click()
+                check = driver.find_elements(By.CLASS_NAME, 'material-video')
+            elif (len(lecture) != 0):
+                jumpNext = driver.find_element(By.CLASS_NAME,
+                                               'Header-course-actions-next')
+                jumpNext.click()
+                check = driver.find_elements(By.CLASS_NAME, 'material-video')
+            elif (len(content) != 0):
+                jumpNext = driver.find_element(By.CLASS_NAME,
+                                               'Header-course-actions-next')
+                jumpNext.click()
+                check = driver.find_elements(By.CLASS_NAME, 'material-video')
+
         if not len(check) == 0:
             nameClass = driver.find_element(
-                By.XPATH,
-                '//*[@id="material-view"]/div[2]/div[1]/div[2]/div/div[1]/div[3]/div/h1'
-            ).text
+                By.CLASS_NAME, 'Header-class-title').text.split("\n")[0]
             number = driver.find_element(
-                By.XPATH,
-                '//*[@id="material-view"]/div[2]/div[1]/div[2]/div/div[1]/div[3]/div/span'
-            ).text.split("/")
+                By.CLASS_NAME,
+                'Header-class-title').text.split("\n")[1].split("/")
             #Remove characters for windows name file
             nameClass = re.sub(r'[^\w\s]', '', nameClass)
             nameClass = number[0] + ". " + nameClass
@@ -97,7 +108,6 @@ if __name__ == "__main__":
             time.sleep(2)
             # Gets all the logs from performance in Chrome
             logs = driver.get_log("performance")
-
             for log in logs:
                 message = log["message"]
                 if "Network.requestWillBeSent" in message:
@@ -118,5 +128,5 @@ if __name__ == "__main__":
                 # subprocess.run(strCommand, shell=True)
             btnNext = driver.find_element(
                 By.CLASS_NAME, 'Header-course-actions-next').click()
-    callProcess(videosUrl)
     driver.quit()
+    callProcess(videosUrl)

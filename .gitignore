@@ -4,10 +4,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.vscode/
+
 videos/
 
 .env
 
 test.py
+test1.py
 another.py
 e.js
