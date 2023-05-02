@@ -32,6 +32,9 @@ if __name__ == "__main__":
     # Startup the chrome webdriver with executable path and
     # pass the chrome options and desired capabilities as
     # parameters.
+    inputOption = input("Do you want to download only this video or this and the following videos?\n1. Just this one\n2. This one and the following\nType: ")
+    while inputOption != "1" and inputOption != "2":
+        inputOption = input("Do you want to download only this video or this and the following videos?\n1. Just this one\n2. This one and the following\nType: ")
     driver = webdriver.Chrome(executable_path="C:/chromedriver.exe",
                               chrome_options=options,
                               desired_capabilities=desired_capabilities)
@@ -60,7 +63,7 @@ if __name__ == "__main__":
     #get the number of the video
     # number = driver.find_element(
     #     By.CLASS_NAME, 'Header-class-title').text.split("\n")[1].split("/")
-
+    subtitles = {}
     while not len(check) == 0:
         #Check the name of the video
         check = driver.find_elements(By.CLASS_NAME, 'material-video')
@@ -84,7 +87,6 @@ if __name__ == "__main__":
                                                'Header-course-actions-next')
                 jumpNext.click()
                 check = driver.find_elements(By.CLASS_NAME, 'material-video')
-
         if not len(check) == 0:
             nameClass = driver.find_element(
                 By.CLASS_NAME, 'Header-class-title').text.split("\n")[0]
@@ -108,6 +110,7 @@ if __name__ == "__main__":
             time.sleep(2)
             # Gets all the logs from performance in Chrome
             logs = driver.get_log("performance")
+            subtitles[nameClass] = []
             for log in logs:
                 message = log["message"]
                 if "Network.requestWillBeSent" in message:
@@ -119,14 +122,21 @@ if __name__ == "__main__":
                             if "https://mdstrm.com/video/" in url:
                                 video = url
                                 print(url)
+                            elif "vtt" in url:
+                                subtitles[nameClass].append(url)
+                                print(url)
                     # close the browser
             respVideo = requests.get(video)
+            if (not len(subtitles[nameClass]) > 0):
+                subtitles.pop(nameClass)
             # check the status code
             if respVideo.status_code == 200:
                 videosUrl[nameClass] = video
                 # strCommand = 'ffmpeg -i {} -c copy "{}.mp4"'.format(video, nameClass)
                 # subprocess.run(strCommand, shell=True)
+            if inputOption == "1":
+                break
             btnNext = driver.find_element(
                 By.CLASS_NAME, 'Header-course-actions-next').click()
     driver.quit()
-    callProcess(videosUrl)
+    callProcess(videosUrl, subtitles)
