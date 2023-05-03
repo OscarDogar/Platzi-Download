@@ -20,7 +20,7 @@ def run_command (command):
     res2 = stderr.decode()
     exit_code = process.returncode
     if exit_code == 0:
-        if "failed: Error number -138 occurred" in stderr.decode():
+        if "failed: Error number -138 occurred" in stderr.decode() or "Unable to open resource:" in stderr.decode():
             return (f'Conversion failed with exit code {exit_code} for {command}')
         else:
             return (f'Conversion succeeded for {command}')
