@@ -20,7 +20,9 @@ def run_command (command):
     res2 = stderr.decode()
     exit_code = process.returncode
     if exit_code == 0:
-        if "failed: Error number -138 occurred" in stderr.decode() or "Unable to open resource:" in stderr.decode():
+        if ("failed: Error number -138 occurred" in stderr.decode() 
+            or "Unable to open resource:" in stderr.decode()
+            or " Failed to reload playlist 0" in stderr.decode()):
             return (f'Conversion failed with exit code {exit_code} for {command}')
         else:
             return (f'Conversion succeeded for {command}')
@@ -81,6 +83,7 @@ def callProcess(info, subtitles):
         for sublist in results:
             for element in sublist:
                 if 'failed' in element:
+                    print(element)
                     count += 1
         print(f"Group {i//processNumber + 1} completed with {count} failed conversions")
 
