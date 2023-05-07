@@ -58,7 +58,11 @@ def downloadSubs (subtitles):
             #endregion
             name = name + f".{language}.vtt"
             subprocess.run(f'cd videos/Subs && curl {sub} -o "{name}"', shell=True)
-
+            
+def createFolder (path):
+    if not checkFolderExists(path):
+        subprocess.run("mkdir {}".format(path[1:]), shell=True)
+        
 def callProcess(info, subtitles):
     #current working directory
     commands = createCommands(info)
@@ -66,8 +70,7 @@ def callProcess(info, subtitles):
         downloadSubs(subtitles)
     else:
         print("No subtitles to download")
-    if not checkFolderExists("\\videos"):
-        subprocess.run("mkdir videos", shell=True)
+    
     # Create a pool of 3 worker processes
     processNumber = 3
     pool = Pool(processes=processNumber)
