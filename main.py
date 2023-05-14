@@ -74,6 +74,8 @@ if __name__ == "__main__":
     # Check the name of the video
     check = driver.find_elements(By.CLASS_NAME, "material-video")
     lecture = driver.find_elements(By.CLASS_NAME, "material-lecture")
+    quiz = driver.find_elements(By.CLASS_NAME, "StartQuizOverview-buttons")
+    playground = driver.find_elements(By.CLASS_NAME, "MaterialIframe")
 
     checkCourseName = driver.find_elements(By.CLASS_NAME, "Header-course-info-content")
     if len(checkCourseName) != 0:
@@ -84,12 +86,21 @@ if __name__ == "__main__":
         createFolder("\\videos\\{}".format(courseName))
 
     print("Finding videos...")
-    while not len(check) == 0 or len(lecture) != 0:
+    while (
+        not len(check) == 0
+        or len(lecture) != 0
+        or len(quiz) != 0
+        or len(playground) != 0
+    ):
         # Check the name of the video
         check = driver.find_elements(By.CLASS_NAME, "material-video")
         lecture = []
+        playground = []
+        quiz = []
+        content = []
         if len(check) == 0:
             quiz = driver.find_elements(By.CLASS_NAME, "StartQuizOverview-buttons")
+            playground = driver.find_elements(By.CLASS_NAME, "MaterialIframe")
             lecture = driver.find_elements(By.CLASS_NAME, "material-lecture")
             content = driver.find_elements(By.CLASS_NAME, "MaterialView-video")
             if len(quiz) != 0:
@@ -112,6 +123,7 @@ if __name__ == "__main__":
                 nameClass = number[0] + ". " + nameClass
                 lecturesUrls.append(number[0] + ". " + driver.current_url)
                 # Execute Chrome dev tool command to obtain the mhtml file
+                time.sleep(1)
                 res = driver.execute_cdp_cmd("Page.captureSnapshot", {})
                 # Write the file locally
                 with open(
@@ -127,6 +139,11 @@ if __name__ == "__main__":
                 )
                 jumpNext.click()
             elif len(content) != 0:
+                jumpNext = driver.find_element(
+                    By.CLASS_NAME, "Header-course-actions-next"
+                )
+                jumpNext.click()
+            elif len(playground) != 0:
                 jumpNext = driver.find_element(
                     By.CLASS_NAME, "Header-course-actions-next"
                 )
@@ -154,6 +171,36 @@ if __name__ == "__main__":
             driver.execute_script(
                 'const a = document.getElementById("ServerPicker"); const news = a["children"]; for (const child of news) { if (child.innerText === "Server C" && !child.classList.contains("className")) { child.click(); break; } }'
             )
+            checkDownloadBtn = driver.find_elements(By.CLASS_NAME, "FilesTree-download")
+            checkDownloadBtn2 = driver.find_elements(By.CLASS_NAME, "fa-download")
+            href = ""
+            fileName = ""
+            extension = ""
+            if checkDownloadBtn:
+                createFolder("\\videos\\" + courseName + "\\resources")
+                DownloadBtn = driver.find_element(By.CLASS_NAME, "FilesTree-download")
+                # get href
+                href = DownloadBtn.get_attribute("href")
+            elif checkDownloadBtn2:
+                createFolder("\\videos\\" + courseName + "\\resources")
+                DownloadBtn = driver.find_element(By.CLASS_NAME, "fa-download")
+                # get the parent element
+                DownloadBtn = DownloadBtn.find_element(By.XPATH, "..")
+                fileName = DownloadBtn.text
+                href = DownloadBtn.get_attribute("href")
+            if href != "":
+                # get the file extension
+                extension = href.split(".")[-1]
+                #!! ERRORS
+                response = requests.get(href)
+                path = "./videos/{}/resources/".format(courseName)
+                if response.status_code == 200:
+                    if extension == "pdf":
+                        with open(f"{path}{fileName}", "wb") as f:
+                            f.write(response.content)
+                    else:
+                        with open(f"{path}/{nameClass}.{extension}", "wb") as f:
+                            f.write(response.content)
             # Sleeps for 2 seconds
             time.sleep(2)
             # Gets all the logs from performance in Chrome
