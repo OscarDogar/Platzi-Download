@@ -66,19 +66,25 @@ def downloadSubs(subtitles, courseName):
                 or re.search(anotherRegex, sub)
                 or re.search(moreRegex, sub)
             )
-            if match:
+            checkSubtitleExtension = re.search(r"\.vtt", sub)
+            if match and checkSubtitleExtension:
                 language = sub[match.start() + 1 : match.end() - 1].lower()
-                if language == "sp":
+                if language == "sp" or language == "es":
                     language = "spa"
-            elif "automatic" in sub.lower():
+                    name = name + f".{language}.vtt"
+                    subprocess.run(
+                        f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"',
+                        shell=True,
+                    )
+            elif "automatic" in sub.lower() or "transcribe" in sub.lower():
                 language = "spa"
+                name = name + f".{language}.vtt"
+                subprocess.run(
+                    f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"', shell=True
+                )
             else:
                 print(f"No match found for {sub}")
             # endregion
-            name = name + f".{language}.vtt"
-            subprocess.run(
-                f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"', shell=True
-            )
 
 
 def createFolder(path):
