@@ -1,5 +1,3 @@
-# Get the logs from a web page using selenium
-
 # Import the required modules
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -7,6 +5,7 @@ from selenium.webdriver.common.by import By
 import time
 import json
 import requests, re
+import glob
 
 # callprocess
 from process import callProcess, createFolder
@@ -14,6 +13,27 @@ from process import callProcess, createFolder
 # read .env file
 from dotenv import load_dotenv
 import os
+
+def remove_word_from_file(directory_path, word):
+    file_paths = glob.glob(
+        directory_path + "/*.mhtml"
+    )
+    if not file_paths:
+        return print("No lectures found")
+    for file_path in file_paths:
+        # Open the file in read mode
+        with open(file_path, "r") as file:
+            # Read the contents of the file
+            contents = file.read()
+        for word in words_to_remove:
+            # Replace the target string
+            contents = contents.replace(word, "")
+        # Open the file in write mode
+        with open(file_path, "w") as file:
+            # Write the modified contents back into the file
+            file.write(contents)
+
+words_to_remove = os.environ.get("WORDS_TO_REMOVE")
 
 # Main Function
 if __name__ == "__main__":
@@ -244,4 +264,9 @@ if __name__ == "__main__":
                 f.write("%s\n" % item)
     if videosUrl or subtitles:
         callProcess(videosUrl, subtitles, courseName)
+    if words_to_remove:
+        # convert string to list and remove spaces
+        words_to_remove = words_to_remove.split(",")
+        words_to_remove = [x.strip() for x in words_to_remove]
+        remove_word_from_file(f"./videos/{courseName}/lectures/", words_to_remove)
     print("--------Finished--------")
