@@ -5,8 +5,9 @@ from multiprocessing import Pool
 import os
 import math
 import re
+import sys
 
-
+#region Folder and file checks
 def checkFolderExists(folder_path):
     fullPath = os.getcwd() + folder_path
     return os.path.exists(fullPath) and os.path.isdir(fullPath)
@@ -16,40 +17,55 @@ def checkFileExists(file_path):
     fullPath = os.getcwd() + file_path
     return os.path.isfile(fullPath)
 
+def createFolder(path):
+    if not checkFolderExists(path):
+        subprocess.run('mkdir "{}"'.format(path[1:]), shell=True)
+#endregion
 
-def run_command(command):
-    process = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
-    )
-    stdout, stderr = process.communicate()
-    res1 = stdout.decode()
-    res2 = stderr.decode()
-    exit_code = process.returncode
-    if exit_code == 0:
+#region Progress bar
+def print_progress_bar(progress):
+    bar_length = 50
+    if progress > 100:
+        progress = 100
+    filled_length = int(progress * bar_length // 100)
+    bar = '=' * filled_length + '-' * (bar_length - filled_length)
+    sys.stdout.write(f'\r[{bar}] {progress:.2f}%')
+    sys.stdout.flush()
+
+def checkDuration(process, command):
+    duration = None
+    progress = 0
+    # Regular expression pattern to extract the duration and progress from FFmpeg's output
+    duration_pattern = re.compile(r'Duration: (\d{2}):(\d{2}):(\d{2}).(\d{2})')
+    progress_pattern = re.compile(r'time=(\d{2}):(\d{2}):(\d{2}).(\d{2})')
+    for line in iter(process.stderr.readline, b''):
+        line = line.decode('utf-8')  # Decode the bytes to string
+        # Search for duration
+        duration_match = duration_pattern.search(line)
+        if duration_match:
+            hours, minutes, seconds, milliseconds = map(int, duration_match.groups())
+            duration = (hours * 3600) + (minutes * 60) + seconds + (milliseconds / 100)
+        # Search for progress
+        progress_match = progress_pattern.search(line)
+        if progress_match and duration:
+            hours, minutes, seconds, milliseconds = map(int, progress_match.groups())
+            current_time = (hours * 3600) + (minutes * 60) + seconds + (milliseconds / 100)
+            progress = (current_time / duration) * 100
+            print_progress_bar(progress)
+        
         if (
-            "failed: Error number -138 occurred" in stderr.decode()
-            or "Unable to open resource:" in stderr.decode()
-            or " Failed to reload playlist 0" in stderr.decode()
+            "failed: Error number -138 occurred" in line
+            or "Unable to open resource:" in line
+            or " Failed to reload playlist 0" in line
         ):
-            return f"Conversion failed with exit code {exit_code} for {command}"
-        else:
-            return f"Conversion succeeded for {command}"
+            return f"Conversion failed for {command}"
+    process.stderr.close()
+    process.wait()
+    if process.returncode != 0:
+        return f"Conversion failed for {command}"
     else:
-        return f"Conversion failed with exit code {exit_code} for {command}"
-
-
-def createCommands(info, courseName):
-    commands = []
-    folder = 'cd videos/"{}" &&'.format(courseName)
-    for key, value in info.items():
-        if not checkFileExists(f"\\videos\\{courseName}\\{key}.mp4"):
-            commands.append(
-                '{} ffmpeg -i {} -c copy "{}.mp4"'.format(folder, value, key)
-            )
-        else:
-            print(f"The file {key} already exists")
-    return commands
-
+        return f"Conversion succeeded for {command}"
+#endregion
 
 def downloadSubs(subtitles, courseName):
     regex = r"\-[a-zA-Z]{2,3}\-"
@@ -86,11 +102,26 @@ def downloadSubs(subtitles, courseName):
                 print(f"No match found for {sub}")
             # endregion
 
+#region Create and run commands
+def createCommands(info, courseName):
+    commands = []
+    folder = 'cd videos/"{}" &&'.format(courseName)
+    for key, value in info.items():
+        if not checkFileExists(f"\\videos\\{courseName}\\{key}.mp4"):
+            commands.append(
+                '{} ffmpeg -i {} -c copy "{}.mp4"'.format(folder, value, key)
+            )
+        else:
+            print(f"The file {key} already exists")
+    return commands
 
-def createFolder(path):
-    if not checkFolderExists(path):
-        subprocess.run('mkdir "{}"'.format(path[1:]), shell=True)
-
+def run_command(command):
+    process = subprocess.Popen(
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+    )
+    result = checkDuration(process, command)
+    return result
+#endregion
 
 def callProcess(info, subtitles, courseName):
     # current working directory
@@ -103,9 +134,10 @@ def callProcess(info, subtitles, courseName):
     # Create a pool of 3 worker processes
     processNumber = 3
     pool = Pool(processes=processNumber)
+    groupNumber = math.ceil(len(commands) / processNumber)
     print("------------------------")
     print(
-        f"{len(commands)} videos will be downloaded divided into groups of {processNumber} for a total of {math.ceil(len(commands)/3)} groups."
+        f"{len(commands)} videos will be downloaded divided into groups of {processNumber} for a total of {groupNumber} groups."
     )
     print("------------------------")
     # Divide the commands into groups of processNumber and run them in parallel
@@ -118,9 +150,10 @@ def callProcess(info, subtitles, courseName):
         for sublist in results:
             for element in sublist:
                 if "failed" in element:
-                    print(element)
+                    print("\n" + element)
                     count += 1
-        print(f"Group {i//processNumber + 1} completed with {count} failed conversions")
+        #print in a new line 
+        print(f"\nGroup {i//processNumber + 1} of {groupNumber} completed with {count} failed conversions")
 
     # Close the pool and wait for all processes to complete
     # print(results)

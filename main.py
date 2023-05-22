@@ -6,6 +6,7 @@ import time
 import json
 import requests, re
 import glob
+import time
 
 # callprocess
 from process import callProcess, createFolder
@@ -37,6 +38,7 @@ words_to_remove = os.environ.get("WORDS_TO_REMOVE")
 
 # Main Function
 if __name__ == "__main__":
+    start_time = time.time()
     createFolder("\\videos")
     videosUrl = {}
     subtitles = {}
@@ -270,3 +272,9 @@ if __name__ == "__main__":
         words_to_remove = [x.strip() for x in words_to_remove]
         remove_word_from_file(f"./videos/{courseName}/lectures/", words_to_remove)
     print("--------Finished--------")
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    hours = int(elapsed_time // 3600)
+    minutes = int((elapsed_time % 3600) // 60)
+    seconds = int(elapsed_time % 60)
+    print(f"The download took {hours} hours, {minutes} minutes, and {seconds} seconds to run.")
