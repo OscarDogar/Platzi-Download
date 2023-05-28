@@ -92,7 +92,7 @@ def downloadSubs(subtitles, courseName):
                         f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"',
                         shell=True,
                     )
-            elif "automatic" in sub.lower() or "transcribe" in sub.lower():
+            elif "automatic" in sub.lower() or "transcribe" in sub.lower() or "_class_" in sub.lower():
                 language = "spa"
                 name = name + f".{language}.vtt"
                 subprocess.run(

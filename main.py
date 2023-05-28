@@ -193,6 +193,7 @@ if __name__ == "__main__":
             driver.execute_script(
                 'const a = document.getElementById("ServerPicker"); const news = a["children"]; for (const child of news) { if (child.innerText === "Server C" && !child.classList.contains("className")) { child.click(); break; } }'
             )
+            time.sleep(2)
             checkDownloadBtn = driver.find_elements(By.CLASS_NAME, "FilesTree-download")
             checkDownloadBtn2 = driver.find_elements(By.CLASS_NAME, "fa-download")
             href = ""
@@ -224,7 +225,7 @@ if __name__ == "__main__":
                         with open(f"{path}/{nameClass}.{extension}", "wb") as f:
                             f.write(response.content)
             # Sleeps for 2 seconds
-            time.sleep(2)
+            time.sleep(1)
             # Gets all the logs from performance in Chrome
             logs = driver.get_log("performance")
             subtitles[nameClass] = []
