@@ -70,7 +70,9 @@ def checkDuration(process, command):
 def downloadSubs(subtitles, courseName):
     regex = r"\-[a-zA-Z]{2,3}\-"
     anotherRegex = r"\.[a-zA-Z]{2,3}\-"
+    anotherRegex2 = r"\_[a-zA-Z]{2,3}\-"
     moreRegex = r"\-[a-zA-Z]{2,3}\."
+    moreRegex2 = r"\d[a-zA-Z]{2}\%"
     if not checkFolderExists(f"\\videos\\{courseName}\\Subs"):
         subprocess.run(f"cd videos/{courseName} && mkdir Subs", shell=True)
     for key, value in subtitles.items():
@@ -80,7 +82,9 @@ def downloadSubs(subtitles, courseName):
             match = (
                 re.search(regex, sub)
                 or re.search(anotherRegex, sub)
+                or re.search(anotherRegex2, sub)
                 or re.search(moreRegex, sub)
+                or re.search(moreRegex2, sub)
             )
             checkSubtitleExtension = re.search(r"\.vtt", sub)
             if match and checkSubtitleExtension:
@@ -92,7 +96,18 @@ def downloadSubs(subtitles, courseName):
                         f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"',
                         shell=True,
                     )
-            elif "automatic" in sub.lower() or "transcribe" in sub.lower() or "_class_" in sub.lower():
+                else:
+                    name = name + f".{language}.vtt"
+                    subprocess.run(
+                        f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"',
+                        shell=True,
+                    )
+            elif ("automatic" in sub.lower() 
+                or "transcribe" in sub.lower() 
+                or "_class_" in sub.lower()
+                or "1280x720" in sub.lower()
+                or "1920x1080" in sub.lower()
+                ):
                 language = "spa"
                 name = name + f".{language}.vtt"
                 subprocess.run(
@@ -124,12 +139,12 @@ def run_command(command):
 #endregion
 
 def callProcess(info, subtitles, courseName):
-    # current working directory
-    commands = createCommands(info, courseName)
     if len(subtitles) > 0:
         downloadSubs(subtitles, courseName)
     else:
         print("No subtitles to download")
+    # current working directory
+    commands = createCommands(info, courseName)
 
     # Create a pool of 3 worker processes
     processNumber = 3
