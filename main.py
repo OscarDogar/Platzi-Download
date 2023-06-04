@@ -87,9 +87,9 @@ if __name__ == "__main__":
     )
     submitBtn.click()
 
-    checkCaptcha = driver.find_elements(By.CLASS_NAME, "StudentsHome-wrapper")
+    checkCaptcha = driver.find_elements(By.CLASS_NAME, "StudentHome-wrapper")
     while not checkCaptcha:
-        checkCaptcha = driver.find_elements(By.CLASS_NAME, "StudentsHome-wrapper")
+        checkCaptcha = driver.find_elements(By.CLASS_NAME, "StudentHome-wrapper")
 
     driver.get(os.environ.get("START_DOWNLOAD_URL"))
 
@@ -193,6 +193,7 @@ if __name__ == "__main__":
             driver.execute_script(
                 'const a = document.getElementById("ServerPicker"); const news = a["children"]; for (const child of news) { if (child.innerText === "Server C" && !child.classList.contains("className")) { child.click(); break; } }'
             )
+            time.sleep(2)
             checkDownloadBtn = driver.find_elements(By.CLASS_NAME, "FilesTree-download")
             checkDownloadBtn2 = driver.find_elements(By.CLASS_NAME, "fa-download")
             href = ""
@@ -224,7 +225,7 @@ if __name__ == "__main__":
                         with open(f"{path}/{nameClass}.{extension}", "wb") as f:
                             f.write(response.content)
             # Sleeps for 2 seconds
-            time.sleep(2)
+            time.sleep(1)
             # Gets all the logs from performance in Chrome
             logs = driver.get_log("performance")
             subtitles[nameClass] = []
@@ -255,7 +256,9 @@ if __name__ == "__main__":
                 break
             btnNext = driver.find_element(By.CLASS_NAME, "Header-course-actions-next")
             # check if the button is disabled
-            if "disabled" not in btnNext.get_attribute("class"):
+            if number[0] == number[1] :
+                break
+            elif "disabled" not in btnNext.get_attribute("class"):
                 btnNext.click()
             else:
                 break
