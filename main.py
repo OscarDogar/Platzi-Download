@@ -87,9 +87,9 @@ if __name__ == "__main__":
     )
     submitBtn.click()
 
-    checkCaptcha = driver.find_elements(By.CLASS_NAME, "StudentsHome-wrapper")
+    checkCaptcha = driver.find_elements(By.CLASS_NAME, "StudentHome-wrapper")
     while not checkCaptcha:
-        checkCaptcha = driver.find_elements(By.CLASS_NAME, "StudentsHome-wrapper")
+        checkCaptcha = driver.find_elements(By.CLASS_NAME, "StudentHome-wrapper")
 
     driver.get(os.environ.get("START_DOWNLOAD_URL"))
 
@@ -256,7 +256,9 @@ if __name__ == "__main__":
                 break
             btnNext = driver.find_element(By.CLASS_NAME, "Header-course-actions-next")
             # check if the button is disabled
-            if "disabled" not in btnNext.get_attribute("class"):
+            if number[0] == number[1] :
+                break
+            elif "disabled" not in btnNext.get_attribute("class"):
                 btnNext.click()
             else:
                 break
