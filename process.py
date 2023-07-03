@@ -73,6 +73,9 @@ def downloadSubs(subtitles, courseName):
     anotherRegex2 = r"\_[a-zA-Z]{2,3}\-"
     moreRegex = r"\-[a-zA-Z]{2,3}\."
     moreRegex2 = r"\d[a-zA-Z]{2}\%"
+    moreRegex3 = r"\-[a-zA-Z]{2}\%"
+    anotherRegex3 = r"\d[a-zA-Z]{2,3}\-"
+    anotherRegex4 = r"\/[a-zA-Z]{2,3}\-"
     if not checkFolderExists(f"\\videos\\{courseName}\\Subs"):
         subprocess.run(f"cd videos/{courseName} && mkdir Subs", shell=True)
     for key, value in subtitles.items():
@@ -83,8 +86,11 @@ def downloadSubs(subtitles, courseName):
                 re.search(regex, sub)
                 or re.search(anotherRegex, sub)
                 or re.search(anotherRegex2, sub)
+                or re.search(anotherRegex3, sub)
+                or re.search(anotherRegex4, sub)
                 or re.search(moreRegex, sub)
                 or re.search(moreRegex2, sub)
+                or re.search(moreRegex3, sub)
             )
             checkSubtitleExtension = re.search(r"\.vtt", sub)
             if match and checkSubtitleExtension:
@@ -102,6 +108,13 @@ def downloadSubs(subtitles, courseName):
                         f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"',
                         shell=True,
                     )
+            elif ( "material_id" in  sub.lower() ):
+                language = "en"
+                name = name + f".{language}.vtt"
+                subprocess.run(
+                    f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"',
+                    shell=True,
+                )
             elif ("automatic" in sub.lower() 
                 or "transcribe" in sub.lower() 
                 or "_class_" in sub.lower()
