@@ -5,44 +5,26 @@ from selenium.webdriver.common.by import By
 import time
 import json
 import requests, re
-import glob
 import time
 
 # callprocess
-from process import callProcess, createFolder
+from process import callProcess
+from utils import createFolder, create_env_file, remove_word_from_file
 
 # read .env file
 from dotenv import load_dotenv
 import os
 
-def remove_word_from_file(directory_path, word):
-    file_paths = glob.glob(
-        directory_path + "/*.mhtml"
-    )
-    if not file_paths:
-        return print("No lectures found")
-    for file_path in file_paths:
-        # Open the file in read mode
-        with open(file_path, "r") as file:
-            # Read the contents of the file
-            contents = file.read()
-        for word in words_to_remove:
-            # Replace the target string
-            contents = contents.replace(word, "")
-        # Open the file in write mode
-        with open(file_path, "w") as file:
-            # Write the modified contents back into the file
-            file.write(contents)
-
-words_to_remove = os.environ.get("WORDS_TO_REMOVE")
 
 # Main Function
 if __name__ == "__main__":
     start_time = time.time()
+    create_env_file()
     createFolder("\\videos")
     videosUrl = {}
     subtitles = {}
     lecturesUrls = []
+    words_to_remove = os.environ.get("WORDS_TO_REMOVE")
     # Enable Performance Logging of Chrome.
     desired_capabilities = DesiredCapabilities.CHROME
     desired_capabilities["goog:loggingPrefs"] = {"performance": "ALL"}
@@ -65,6 +47,19 @@ if __name__ == "__main__":
         inputOption = input(
             "Do you want to download only this video or this and the following videos?\n1. Just this one\n2. This one and the following\nType: "
         )
+    
+    # The regex pattern to match the URL until "clases"
+    pattern = r'https:\/\/platzi\.com\/clases'
+
+    while True:
+        # The input string containing the URL
+        startUrl = input(
+            "Por favor ingresa la URL de la clase que quieres descargar: "
+        )
+        # Find all occurrences of the pattern in the input string
+        matches = re.match(pattern, startUrl)
+        if matches:
+            break
     driver = webdriver.Chrome(
         executable_path="C:/chromedriver.exe",
         chrome_options=options,
@@ -91,7 +86,7 @@ if __name__ == "__main__":
     while not checkCaptcha:
         checkCaptcha = driver.find_elements(By.CLASS_NAME, "StudentHome-wrapper")
 
-    driver.get(os.environ.get("START_DOWNLOAD_URL"))
+    driver.get(startUrl)
 
     # Check the name of the video
     check = driver.find_elements(By.CLASS_NAME, "material-video")
