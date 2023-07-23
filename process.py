@@ -6,21 +6,8 @@ import os
 import math
 import re
 import sys
+from utils import checkFolderExists, checkFileExists, createFolder
 
-#region Folder and file checks
-def checkFolderExists(folder_path):
-    fullPath = os.getcwd() + folder_path
-    return os.path.exists(fullPath) and os.path.isdir(fullPath)
-
-
-def checkFileExists(file_path):
-    fullPath = os.getcwd() + file_path
-    return os.path.isfile(fullPath)
-
-def createFolder(path):
-    if not checkFolderExists(path):
-        subprocess.run('mkdir "{}"'.format(path[1:]), shell=True)
-#endregion
 
 #region Progress bar
 def print_progress_bar(progress):
