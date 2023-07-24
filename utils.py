@@ -45,4 +45,7 @@ def checkFileExists(file_path):
 def createFolder(path):
     if not checkFolderExists(path):
         subprocess.run('mkdir "{}"'.format(path[1:]), shell=True)
+        
+def checkIfExtesionExists(directory, extension):
+    return any(file.endswith(extension) for file in os.listdir(directory))
 #endregion
