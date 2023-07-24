@@ -6,8 +6,8 @@ import os
 import math
 import re
 import sys
-from utils import checkFolderExists, checkFileExists, createFolder
-
+from utils import checkFolderExists, checkFileExists
+from downloadVideoInfo import getInfo
 
 #region Progress bar
 def print_progress_bar(progress):
@@ -123,9 +123,10 @@ def createCommands(info, courseName):
     folder = 'cd videos/"{}" &&'.format(courseName)
     for key, value in info.items():
         if not checkFileExists(f"\\videos\\{courseName}\\{key}.mp4"):
-            commands.append(
-                '{} ffmpeg -i {} -c copy "{}.mp4"'.format(folder, value, key)
-            )
+            getInfo(value, courseName, key)
+            # commands.append(
+            #     '{} ffmpeg -i {} -c copy "{}.mp4"'.format(folder, value, key)
+            # )
         else:
             print(f"The file {key} already exists")
     return commands
@@ -145,7 +146,8 @@ def callProcess(info, subtitles, courseName):
         print("No subtitles to download")
     # current working directory
     commands = createCommands(info, courseName)
-
+    if  checkFolderExists(f"\\videos\\{courseName}\\videoInfo"):
+        subprocess.run(f'cd videos/{courseName}/ && rmdir videoInfo', shell=True)
     # Create a pool of 3 worker processes
     processNumber = 3
     pool = Pool(processes=processNumber)

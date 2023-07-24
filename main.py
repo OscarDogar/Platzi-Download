@@ -15,7 +15,6 @@ from utils import createFolder, create_env_file, remove_word_from_file
 from dotenv import load_dotenv
 import os
 
-
 # Main Function
 if __name__ == "__main__":
     start_time = time.time()
