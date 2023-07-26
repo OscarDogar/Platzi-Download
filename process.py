@@ -152,11 +152,11 @@ def callProcess(info, subtitles, courseName):
     processNumber = 3
     pool = Pool(processes=processNumber)
     groupNumber = math.ceil(len(commands) / processNumber)
-    print("------------------------")
-    print(
-        f"{len(commands)} videos will be downloaded divided into groups of {processNumber} for a total of {groupNumber} groups."
-    )
-    print("------------------------")
+    # print("------------------------")
+    # print(
+    #     f"{len(commands)} videos will be downloaded divided into groups of {processNumber} for a total of {groupNumber} groups."
+    # )
+    # print("------------------------")
     # Divide the commands into groups of processNumber and run them in parallel
     for i in range(0, len(commands), processNumber):
         results = []
