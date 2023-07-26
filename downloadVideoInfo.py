@@ -2,7 +2,25 @@
 import subprocess
 import requests
 import re
+import time
 from utils import createFolder, checkIfExtesionExists
+
+def make_request_with_retries(url, headers, max_retries=3, retry_delay=1):
+    for retry in range(max_retries):
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                return response  # Return the response if successful
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed (retry {retry + 1}/{max_retries}): {e}")
+        
+        # Wait before the next retry (using a simple backoff strategy)
+        time.sleep(retry_delay)
+        retry_delay *= 2  # Double the waiting time for the next retry
+
+    # All retries failed, handle the failure here
+    print("All retries failed.")
+    return None  # Or raise an exception, depending on your use case
 
 def getInfo(url, courseName, className):
     folderPath = f'videos/{courseName}/videoInfo'
@@ -65,7 +83,8 @@ def getInfo(url, courseName, className):
         array.pop()
         i = 0
         for url in array:
-            resTs = requests.get(url, headers=headers)
+            resTs = make_request_with_retries(url, headers)
+            # resTs = requests.get(url, headers=headers)
             if resTs.status_code == 200:
                 with open(f'{folderPath}/{matchesTs[i]}', 'ab') as f:
                     f.write(resTs.content)
@@ -75,7 +94,9 @@ def getInfo(url, courseName, className):
             i += 1
             
         #run command to convert the ts files to mp4
-        process = subprocess.check_output(f'cd {folderPath} && ffmpeg -protocol_whitelist file,tls,tcp,https,crypto -allowed_extensions ALL -i info.m3u8 -c copy "{className}".mp4 && move "{className}.mp4" ..\\"{className}.mp4"', shell=True)
+        command = f'cd {folderPath} && ffmpeg -protocol_whitelist file,tls,tcp,https,crypto -allowed_extensions ALL -i info.m3u8 -c copy "{className}".mp4 && move "{className}.mp4" ..\\"{className}.mp4"'
+        subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        print(f'Finished downloading {className}')
         #remove the ts files
         if checkIfExtesionExists(folderPath, '.ts'):
             removeTs = subprocess.check_output(f'cd {folderPath} && del *.ts', shell=True)

@@ -20,7 +20,7 @@ def remove_word_from_file(directory_path, words):
             file.write(contents)
 
 def create_env_file():
-    file_path = '.env.development'
+    file_path = '.env'
     if checkFileExists(file_path):
         return print(f"File {file_path} already exists")
     env_variables = {
