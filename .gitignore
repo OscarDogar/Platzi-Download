@@ -3,14 +3,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
-.vscode/
-
-videos/
-
+*.spec
 .env
 
-test.py
-test1.py
-another.py
-e.js
+.vscode/
+videos/
+build/
+dist/
+test/
+

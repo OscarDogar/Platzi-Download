@@ -21,16 +21,15 @@ def remove_word_from_file(directory_path, words):
 
 def create_env_file():
     file_path = '.env'
-    if checkFileExists(file_path):
-        return print(f"File {file_path} already exists")
-    env_variables = {
-            'EMAIL': '"Your email"',
-            'PWD': '"Your password"',
-            'WORDS_TO_REMOVE': 'Word1, Word2, Word3, Word4'
-        }
-    with open(file_path, 'w') as env_file:
-        for key, value in env_variables.items():
-            env_file.write(f"{key} = {value}\n")
+    if not checkFileExists(file_path):
+        env_variables = {
+                'EMAIL': '"Your email"',
+                'PWD': '"Your password"',
+                'WORDS_TO_REMOVE': 'Word1, Word2, Word3, Word4'
+            }
+        with open(file_path, 'w') as env_file:
+            for key, value in env_variables.items():
+                env_file.write(f"{key} = {value}\n")
 
 #region Folder and file checks
 def checkFolderExists(folder_path):
