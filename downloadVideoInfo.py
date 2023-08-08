@@ -12,7 +12,7 @@ def make_request_with_retries(url, headers, max_retries=3, retry_delay=1):
             if response.status_code == 200:
                 return response  # Return the response if successful
         except requests.exceptions.RequestException as e:
-            print(f"Request failed (retry {retry + 1}/{max_retries}): {e}")
+            print(f"Request failed (retry {retry + 1}/{max_retries})")
         
         # Wait before the next retry (using a simple backoff strategy)
         time.sleep(retry_delay)
@@ -20,7 +20,7 @@ def make_request_with_retries(url, headers, max_retries=3, retry_delay=1):
 
     # All retries failed, handle the failure here
     print("All retries failed.")
-    return None  # Or raise an exception, depending on your use case
+    return None 
 
 def getInfo(url, courseName, className):
     folderPath = f'videos/{courseName}/videoInfo'
