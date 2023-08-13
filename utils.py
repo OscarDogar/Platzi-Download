@@ -36,7 +36,6 @@ def checkFolderExists(folder_path):
     fullPath = os.getcwd() + folder_path
     return os.path.exists(fullPath) and os.path.isdir(fullPath)
 
-
 def checkFileExists(file_path):
     fullPath = os.getcwd() + file_path
     return os.path.isfile(fullPath) or os.path.exists(file_path)
@@ -44,7 +43,7 @@ def checkFileExists(file_path):
 def createFolder(path):
     if not checkFolderExists(path):
         subprocess.run('mkdir "{}"'.format(path[1:]), shell=True)
-        
+
 def checkIfExtesionExists(directory, extension):
     return any(file.endswith(extension) for file in os.listdir(directory))
 #endregion

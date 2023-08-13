@@ -6,6 +6,7 @@ __pycache__/
 *.spec
 .env
 
+# Folders
 .vscode/
 videos/
 build/

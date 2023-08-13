@@ -7,6 +7,7 @@ import time
 import json
 import requests, re
 import time
+import multiprocessing
 
 # callprocess
 from process import callProcess
@@ -55,11 +56,37 @@ selectorErrorMsgs = {
 }
 #endregion
 
-# Main Function
-if __name__ == "__main__":
+def menu():
+    inputOption = input(
+        "Do you want to download only this video or this and the following videos?\n1. Just this one\n2. This one and the following\nType: "
+    )
+    while inputOption != "1" and inputOption != "2":
+        inputOption = input(
+            "Do you want to download only this video or this and the following videos?\n1. Just this one\n2. This one and the following\nType: "
+        )
+    
+    # The regex pattern to match the URL until "clases"
+    pattern = r'https:\/\/platzi\.com\/clases'
+
+    while True:
+        # The input string containing the URL
+        startUrl = input(
+            "Please enter the URL of the class you want to download: "
+        )
+        # Find all occurrences of the pattern in the input string
+        matches = re.match(pattern, startUrl)
+        if matches:
+            break
+    return inputOption, startUrl
+
+def main():
+    create_env_file()
+    work()
+
+def work ():
     try:
+        inputOption, startUrl = menu()
         start_time = time.time()
-        create_env_file()
         createFolder("\\videos")
         videosUrl = {}
         subtitles = {}
@@ -80,26 +107,7 @@ if __name__ == "__main__":
         # Startup the chrome webdriver with executable path and
         # pass the chrome options and desired capabilities as
         # parameters.
-        inputOption = input(
-            "Do you want to download only this video or this and the following videos?\n1. Just this one\n2. This one and the following\nType: "
-        )
-        while inputOption != "1" and inputOption != "2":
-            inputOption = input(
-                "Do you want to download only this video or this and the following videos?\n1. Just this one\n2. This one and the following\nType: "
-            )
         
-        # The regex pattern to match the URL until "clases"
-        pattern = r'https:\/\/platzi\.com\/clases'
-
-        while True:
-            # The input string containing the URL
-            startUrl = input(
-                "Por favor ingresa la URL de la clase que quieres descargar: "
-            )
-            # Find all occurrences of the pattern in the input string
-            matches = re.match(pattern, startUrl)
-            if matches:
-                break
         service = Service(webdriver_path)
         driver = webdriver.Chrome(
             service = service,
@@ -342,8 +350,14 @@ if __name__ == "__main__":
             print("There was an error downloading the video")
         elif "Chrome failed to start'" in str(e):
             print("Chrome failed to start")
+        elif "cannot access local variable 'video'" in str(e):
+            print("There was an error finding the video, it seems that the server is not available")
         else:
             print(e)
     finally:
-        #press any key to exit
         input("Press enter to exit")
+    
+if __name__ == "__main__":
+    # Pyinstaller fix
+    multiprocessing.freeze_support()
+    main()
