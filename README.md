@@ -8,12 +8,16 @@ Permite descargar videos de Platzi muchos más rápido. Permite descargar tanto 
 ## Requirements 
 - Es **NECESARIO** tener una cuenta de suscripción a Platzi.
 - Tener Google Chrome instalado.
-- Descargar el webdriver de selenium con la misma versión de chrome instalada (el cual puedes descargar [aqui](https://chromedriver.chromium.org/downloads)) y colocarlo en la ruta inicial del disco *C*, es decir, *"C:/chromedriver.exe"*
+- Descargar el webdriver de selenium con la misma versión de chrome instalada (el cual puedes descargar [aquí](https://chromedriver.chromium.org/downloads)) y colocarlo en la ruta inicial del disco *C*, es decir, *"C:/chromedriver.exe"*
 - Instalar requirements.txt
 - Cambiar en el archivo .env que se creó al correr el programa por primera vez las variables de entorno que se necesitan:
   1. *EMAIL* = "tuemail@email.com"
   2. *PWD* = "tucontraseña"
   3. *WORDS_TO_REMOVE*(opcional) = word1, word2, word3 (son algunas palabras que se eliminan al momento de descargar una lectura).
+ 
+## Installation
+
+Si lo deseas puedes simplemente descargar el ejecutable del último release el cual puedes encontrar [aquí](https://github.com/OscarDogar/Platzi-Download/releases). 
 
 ## Steps
 
@@ -49,7 +53,6 @@ Permite descargar videos de Platzi muchos más rápido. Permite descargar tanto 
 * not found en los subtítulos, esto es debido a que no cumplió con algunas validaciones para poderlo descargar.
 * All retries failed. es cuando al momento de descargar un video no se pudo descargar algunas de las partes, por lo que se salta este video y sigue al siguiente.
 * Si al momento de estar buscando los videos se le da click a otra parte que redireccione a una página distinta, Genera un problema.
-
 
 ## Result
 
