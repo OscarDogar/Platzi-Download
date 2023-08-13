@@ -85,6 +85,8 @@ def getInfo(url, courseName, className):
         for url in array:
             resTs = make_request_with_retries(url, headers)
             # resTs = requests.get(url, headers=headers)
+            if resTs == None:
+                break
             if resTs.status_code == 200:
                 with open(f'{folderPath}/{matchesTs[i]}', 'ab') as f:
                     f.write(resTs.content)
@@ -92,12 +94,14 @@ def getInfo(url, courseName, className):
                 print(f'error downloading ts file {matchesTs[i]}')
                 break
             i += 1
-            
-        #run command to convert the ts files to mp4
-        command = f'cd {folderPath} && ffmpeg -protocol_whitelist file,tls,tcp,https,crypto -allowed_extensions ALL -i info.m3u8 -c copy "{className}".mp4 && move "{className}.mp4" ..\\"{className}.mp4"'
-        subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-        print(f'Finished downloading {className}')
-        #remove the ts files
+        if resTs == None:
+            print(f'error downloading {className}')
+        else:
+            #run command to convert the ts files to mp4
+            command = f'cd {folderPath} && ffmpeg -protocol_whitelist file,tls,tcp,https,crypto -allowed_extensions ALL -i info.m3u8 -c copy "{className}".mp4 && move "{className}.mp4" ..\\"{className}.mp4"'
+            subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+            print(f'Finished downloading {className}')
+        #remove files
         if checkIfExtesionExists(folderPath, '.ts'):
             removeTs = subprocess.check_output(f'cd {folderPath} && del *.ts', shell=True)
         if checkIfExtesionExists(folderPath, '.m3u8'):
