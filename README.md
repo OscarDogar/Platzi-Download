@@ -1,5 +1,5 @@
 <div align="center">
-  <img src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/4bb524da-88d1-4861-8c7f-8921b1c11c10"/>
+  <img src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/5a57dd93-1138-40d1-9231-c3c029c98bb5"/>
   <h1>Platzi-Download</h1>
 </div>
 
