@@ -7,6 +7,7 @@ Permite descargar videos de Platzi muchos más rápido. Permite descargar tanto 
 
 ## Requirements 
 - Es **NECESARIO** tener una cuenta de suscripción a Platzi.
+- Tener instalado FFmpeg el cual puedes descargar en [https://ffmpeg.org/](https://ffmpeg.org/)
 - Tener Google Chrome instalado.
 - Descargar el webdriver de selenium con la misma versión de chrome instalada (el cual puedes descargar [aquí](https://chromedriver.chromium.org/downloads)) y colocarlo en la ruta inicial del disco *C*, es decir, *"C:/chromedriver.exe"*
 - Instalar requirements.txt
