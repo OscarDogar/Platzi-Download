@@ -54,6 +54,12 @@ Si lo deseas puedes simplemente descargar el ejecutable del último release el c
 * All retries failed. es cuando al momento de descargar un video no se pudo descargar algunas de las partes, por lo que se salta este video y sigue al siguiente.
 * Si al momento de estar buscando los videos se le da click a otra parte que redireccione a una página distinta, Genera un problema.
 
+## Sponsor [<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/60854050/263421335-c7468ed6-7853-42c6-9de9-05be51da1ca2.png" width="25"/>](https://github.com/sponsors/OscarDogar)
+
+- Si este repositorio te ha sido útil o te ha brindado ayuda, te agradecería mucho si pudieras considerar hacer clic en el botón de sponsor. Tu apoyo es lo que impulsa la mejora continua y la creación de nuevos proyectos similares a este. Juntos, podemos seguir haciendo grandes cosas. ¡Gracias por ser parte de esta comunidad!
+
+[Sponsor me <img src="https://github-production-user-asset-6210df.s3.amazonaws.com/60854050/263421335-c7468ed6-7853-42c6-9de9-05be51da1ca2.png" width="20"/>](https://github.com/sponsors/OscarDogar)
+
 ## Result
 
 Una vez completado todo el proceso quedarán los cursos dentro de la carpeta llamada "videos" y dentro estarán otras carpetas 
