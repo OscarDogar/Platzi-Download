@@ -1,4 +1,4 @@
-import subprocess, glob, os
+import subprocess, glob, os, sys
 
 def remove_word_from_file(directory_path, words):
     file_paths = glob.glob(
@@ -30,6 +30,15 @@ def create_env_file():
         with open(file_path, 'w') as env_file:
             for key, value in env_variables.items():
                 env_file.write(f"{key} = {value}\n")
+
+def print_progress_bar(progress, finalNumber):
+    bar_length = 50
+    filled_length = int(progress * bar_length // finalNumber)
+    bar = '=' * filled_length + '-' * (bar_length - filled_length)
+    sys.stdout.write(f'\r[{bar}] {progress}/{finalNumber} {progress*100/finalNumber:.2f}%')
+    sys.stdout.flush()
+    if progress == finalNumber:
+        print("\n")
 
 #region Folder and file checks
 def checkFolderExists(folder_path):

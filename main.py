@@ -1,4 +1,5 @@
 # Import the required modules
+import undetected_chromedriver as uc
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -11,7 +12,7 @@ import multiprocessing
 
 # callprocess
 from process import callProcess
-from utils import createFolder, create_env_file, remove_word_from_file
+from utils import createFolder, create_env_file, remove_word_from_file, print_progress_bar
 
 # read .env file
 from dotenv import load_dotenv
@@ -52,9 +53,52 @@ selectorErrorMsgs = {
     nextClassBtnSelector: "There was an error finding the next class button",
     checkDownloadableResourcesSelector: "There was an error finding the downloadable resources",
     checkDownloadableFileSelector: "There was an error finding the downloadable file"
-    
 }
 #endregion
+
+def downloadResources(driver, courseName, nameClass):
+    checkDownloadBtn = driver.find_elements(By.CLASS_NAME, checkDownloadableResourcesSelector) #zip download btn
+    #when the download zip btn is not available
+    checkDownloadBtn2 = driver.find_elements(By.CLASS_NAME, checkDownloadableFileSelector)
+    href = ""
+    fileName = ""
+    extension = ""
+    if checkDownloadBtn:
+        createFolder("\\videos\\" + courseName + "\\resources")
+        DownloadBtn = driver.find_element(By.CLASS_NAME, checkDownloadableResourcesSelector)
+        # get href
+        href = DownloadBtn.get_attribute("href")
+        if href != "":
+                # get the file extension
+                extension = href.split(".")[-1]
+                #!! ERRORS
+                response = requests.get(href)
+                path = "./videos/{}/resources/".format(courseName)
+                if response.status_code == 200:
+                    if extension == "pdf":
+                        with open(f"{path}{fileName}", "wb") as f:
+                            f.write(response.content)
+                    else:
+                        with open(f"{path}/{nameClass}.{extension}", "wb") as f:
+                            f.write(response.content)
+    elif checkDownloadBtn2:
+        createFolder("\\videos\\" + courseName + "\\resources")
+        #download the files on checkDownloadBtn2
+        for btn in checkDownloadBtn2:
+            DownloadBtn = btn.find_element(By.XPATH, "..")
+            fileName = DownloadBtn.text
+            href = DownloadBtn.get_attribute("href")
+            if href != "":
+                # get the file extension
+                extension = href.split(".")[-1]
+                #!! ERRORS
+                response = requests.get(href)
+                path = "./videos/{}/resources/".format(courseName)
+                #get the number from the nameClass
+                number = nameClass.split(".")[0]
+                if response.status_code == 200:
+                    with open(f"{path}{number}. {fileName}", "wb") as f:
+                        f.write(response.content)
 
 def menu():
     inputOption = input(
@@ -102,14 +146,18 @@ def work ():
         # Ignores any certificate errors if there is any
         chrome_options.add_argument("--ignore-certificate-errors")
         # Chrome will start in Headless mode
-        # options.add_argument('headless')
+        chrome_options.add_argument('headless')
+        chrome_options.add_argument("--disable-notifications")
+        chrome_options.add_argument("--disable-popup-blocking")
+        chrome_options.add_argument("--incognito")
+        
 
         # Startup the chrome webdriver with executable path and
         # pass the chrome options and desired capabilities as
         # parameters.
         
         service = Service(webdriver_path)
-        driver = webdriver.Chrome(
+        driver = uc.Chrome(
             service = service,
             options = chrome_options,
             desired_capabilities = desired_capabilities,
@@ -238,41 +286,13 @@ def work ():
                     'const a = document.getElementById("ServerPicker"); const news = a["children"]; for (const child of news) { if (child.innerText === "Server C" && !child.classList.contains("className")) { child.click(); break; } }'
                 )
                 time.sleep(2)
-                checkDownloadBtn = driver.find_elements(By.CLASS_NAME, checkDownloadableResourcesSelector)
-                checkDownloadBtn2 = driver.find_elements(By.CLASS_NAME, checkDownloadableFileSelector)
-                href = ""
-                fileName = ""
-                extension = ""
-                if checkDownloadBtn:
-                    createFolder("\\videos\\" + courseName + "\\resources")
-                    DownloadBtn = driver.find_element(By.CLASS_NAME, checkDownloadableResourcesSelector)
-                    # get href
-                    href = DownloadBtn.get_attribute("href")
-                elif checkDownloadBtn2:
-                    createFolder("\\videos\\" + courseName + "\\resources")
-                    DownloadBtn = driver.find_element(By.CLASS_NAME, checkDownloadableFileSelector)
-                    # get the parent element
-                    DownloadBtn = DownloadBtn.find_element(By.XPATH, "..")
-                    fileName = DownloadBtn.text
-                    href = DownloadBtn.get_attribute("href")
-                if href != "":
-                    # get the file extension
-                    extension = href.split(".")[-1]
-                    #!! ERRORS
-                    response = requests.get(href)
-                    path = "./videos/{}/resources/".format(courseName)
-                    if response.status_code == 200:
-                        if extension == "pdf":
-                            with open(f"{path}{fileName}", "wb") as f:
-                                f.write(response.content)
-                        else:
-                            with open(f"{path}/{nameClass}.{extension}", "wb") as f:
-                                f.write(response.content)
-                # Sleeps for 2 seconds
+                downloadResources(driver, courseName, nameClass)
                 time.sleep(1)
                 # Gets all the logs from performance in Chrome
                 logs = driver.get_log("performance")
                 subtitles[nameClass] = []
+                if inputOption == "2":
+                    print_progress_bar(int(number[0]), int(number[1]))
                 for log in logs:
                     message = log["message"]
                     if "Network.requestWillBeSent" in message:
@@ -306,7 +326,7 @@ def work ():
                     btnNext.click()
                 else:
                     break
-        driver.quit()
+        driver.close()
         if len(lecturesUrls) > 0:
             with open(f"./videos/{courseName}/lectures/Lectures Urls.txt", "a") as f:
                 for item in lecturesUrls:
