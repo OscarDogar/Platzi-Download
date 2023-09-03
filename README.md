@@ -32,11 +32,11 @@ Si lo deseas puedes simplemente descargar el ejecutable del último release el c
    - Si el usuario elige la opción 1, se procede a descargar únicamente el video correspondiente a esa URL.
    - Si el usuario selecciona la opción 2, se le solicita ingresar la URL del video desde donde desea comenzar la descarga.
 
-3. El programa abre el navegador Chrome exclusivamente para resolver el Captcha de manera manual. Este Captcha es generado al realizar el inicio de sesión.
+3. Espere hasta que aparezca el mensaje ```Finding videos...```
 
-4. Después de resolver el Captcha, el proceso avanza a la siguiente etapa. El programa navega a la URL proporcionada anteriormente para comenzar la verificación de la disponibilidad de descarga de los videos. Este proceso también se aplica a los subtítulos, recursos y lecturas.
+4. Después, el proceso avanza a la siguiente etapa. El programa navega a la URL proporcionada anteriormente para comenzar la verificación de la disponibilidad de descarga de los videos. Este proceso también se aplica a los subtítulos, recursos y lecturas.
 
-5. Una vez completada la verificación de los videos, el programa cierra automáticamente la ventana del navegador Chrome.
+5. Una vez completada la verificación de los videos, el programa empieza a descargar los videos encontrados 1 por 1.
 
 6. Los pasos en que se realiza la descarga es en el siguiente orden:
    - **Descarga de lecturas**: El programa descarga las lecturas al momento de cargar y las guarda en la cartpeta lectures.
@@ -44,7 +44,7 @@ Si lo deseas puedes simplemente descargar el ejecutable del último release el c
    - **Descarga de subtítulos**: Los subtítulos de los videos son descargados, garantizando su disponibilidad para su posterior uso, estos se encuentran dentro de la carpeta del curso, en una carpeta llamada *Subs*.
    - **Descarga de videos**: El programa comienza a descargar los videos y los descarga dentro de la carpeta de videos y dentro de otra carpeta con el nombre del curso.
 
-7. Con todas las descargas completadas, el proceso concluye y los videos, subtítulos y recursos estarán disponibles para su uso según las preferencias del usuario.
+7. Con todas las descargas completadas, el proceso concluye y los videos, subtítulos y recursos estarán disponibles en una carpeta con el nombre de la clase dentro de la carpeta videos.
 
 ## Possible failures
 
