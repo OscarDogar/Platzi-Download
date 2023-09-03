@@ -3,7 +3,7 @@ import subprocess
 import requests
 import re
 import time
-from utils import createFolder, checkIfExtesionExists
+from utils import createFolder, checkIfExtesionExists, print_progress_bar
 
 def make_request_with_retries(url, headers, max_retries=3, retry_delay=1):
     for retry in range(max_retries):
@@ -12,7 +12,7 @@ def make_request_with_retries(url, headers, max_retries=3, retry_delay=1):
             if response.status_code == 200:
                 return response  # Return the response if successful
         except requests.exceptions.RequestException as e:
-            print(f"Request failed (retry {retry + 1}/{max_retries})")
+            print(f"\nRequest failed (retry {retry + 1}/{max_retries})")
         
         # Wait before the next retry (using a simple backoff strategy)
         time.sleep(retry_delay)
@@ -23,6 +23,7 @@ def make_request_with_retries(url, headers, max_retries=3, retry_delay=1):
     return None 
 
 def getInfo(url, courseName, className):
+    errorGettingClasses = None
     folderPath = f'videos/{courseName}/videoInfo'
     createFolder("\\"+folderPath)
     res = requests.get(url)
@@ -82,12 +83,14 @@ def getInfo(url, courseName, className):
         #remove the last element of the array
         array.pop()
         i = 0
+        print(f'Started downloading {className}')
         for url in array:
             resTs = make_request_with_retries(url, headers)
             # resTs = requests.get(url, headers=headers)
             if resTs == None:
                 break
             if resTs.status_code == 200:
+                print_progress_bar(i+1, len(array))
                 with open(f'{folderPath}/{matchesTs[i]}', 'ab') as f:
                     f.write(resTs.content)
             else:
@@ -95,12 +98,13 @@ def getInfo(url, courseName, className):
                 break
             i += 1
         if resTs == None:
-            print(f'error downloading {className}')
+            print(f'ERROR downloading {className}')
+            errorGettingClasses = className
         else:
             #run command to convert the ts files to mp4
             command = f'cd {folderPath} && ffmpeg -protocol_whitelist file,tls,tcp,https,crypto -allowed_extensions ALL -i info.m3u8 -c copy "{className}".mp4 && move "{className}.mp4" ..\\"{className}.mp4"'
             subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-            print(f'Finished downloading {className}')
+            # print(f'Finished downloading {className}')
         #remove files
         if checkIfExtesionExists(folderPath, '.ts'):
             removeTs = subprocess.check_output(f'cd {folderPath} && del *.ts', shell=True)
@@ -108,3 +112,4 @@ def getInfo(url, courseName, className):
             removem3u8 = subprocess.check_output(f'cd {folderPath} && del *.m3u8', shell=True)
         if checkIfExtesionExists(folderPath, '.key'):
             removeKey = subprocess.check_output(f'cd {folderPath} && del *.key', shell=True)
+    return errorGettingClasses

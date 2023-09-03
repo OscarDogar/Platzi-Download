@@ -120,15 +120,24 @@ def downloadSubs(subtitles, courseName):
 #region Create and run commands
 def createCommands(info, courseName):
     commands = []
+    errorGettingClasses = []
     folder = 'cd videos/"{}" &&'.format(courseName)
     for key, value in info.items():
         if not checkFileExists(f"\\videos\\{courseName}\\{key}.mp4"):
-            getInfo(value, courseName, key)
+            classError = getInfo(value, courseName, key)
+            if classError:
+                errorGettingClasses.append(classError)
+                classError = None
             # commands.append(
             #     '{} ffmpeg -i {} -c copy "{}.mp4"'.format(folder, value, key)
             # )
         else:
             print(f"The file {key} already exists")
+    if len(errorGettingClasses) > 0:
+        print("xxxxxxxxxxxxxx ERRORS xxxxxxxxxxxxxx")
+        print("The following classes failed to download:")
+        for error in errorGettingClasses:
+            print(error)
     return commands
 
 def run_command(command):
