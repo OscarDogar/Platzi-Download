@@ -146,7 +146,7 @@ def work ():
         # Ignores any certificate errors if there is any
         chrome_options.add_argument("--ignore-certificate-errors")
         # Chrome will start in Headless mode
-        chrome_options.add_argument('headless')
+        # chrome_options.add_argument('headless')
         chrome_options.add_argument("--disable-notifications")
         chrome_options.add_argument("--disable-popup-blocking")
         chrome_options.add_argument("--incognito")
