@@ -4,6 +4,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
 import json
 import requests, re
@@ -24,18 +26,20 @@ emailSelector = '//*[@id="login-v2"]/div/div/div/div[3]/form/div[2]/input'
 pwdSelector = '//*[@id="login-v2"]/div/div/div/div[3]/form/div[3]/input'
 submitLoginBtnSelector= '//*[@id="login-v2"]/div/div/div/div[3]/form/button'
 
-checkCaptchaSelector = "StudentHome-wrapper"
-checkVideoSelector = "material-video"
-checkLectureSelector = "material-lecture"
+checkCaptchaSelector = "MainLayout"
+checkVideoSelector = "VideoPlayer"
+checkLectureSelector = "styles_Lecture"
 checkQuizSelector = "StartQuizOverview-buttons"
 checkPlaygroundSelector = "MaterialIframe"
+contentSelector = 'styles_IFrame'
 
-courseNameSelector = "Header-course-info-content"
+courseNameSelector = "course_name"
 videoDivSelector = "video-js"
 
 skipQuizBtnSelector = "StartQuizOverview-btn--skip"
-classNameSelector = "Header-class-title"
-nextClassBtnSelector = "Header-course-actions-next"
+classNameSelector = "MaterialHeading-title"
+classNumberSelector = "MaterialHeading-tag"
+nextClassBtnSelector = "Button--secondary"
 
 checkDownloadableResourcesSelector = "FilesTree-download"
 checkDownloadableFileSelector = "fa-download"
@@ -109,23 +113,59 @@ def menu():
             "Do you want to download only this video or this and the following videos?\n1. Just this one\n2. This one and the following\nType: "
         )
     
-    # The regex pattern to match the URL until "clases"
-    pattern = r'https:\/\/platzi\.com\/clases'
-
     while True:
         # The input string containing the URL
         startUrl = input(
             "Please enter the URL of the class you want to download: "
         )
-        # Find all occurrences of the pattern in the input string
-        matches = re.match(pattern, startUrl)
-        if matches:
+        if "clases" in startUrl:
             break
     return inputOption, startUrl
 
 def main():
     create_env_file()
     work()
+    
+def getClassName(driver):
+    # className = driver.find_element(By.XPATH, f"//*[contains(@class, '{classNameSelector}')]").text
+    className = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, f"//*[contains(@class, '{classNameSelector}')]")))
+    return re.sub(r"[^\w\s]", "", className.text)
+
+def getClassNumber(driver):
+    classNumber = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, f"//*[contains(@class, '{classNumberSelector}')]")))
+
+    # classNumber = driver.find_element(By.XPATH, f"//*[contains(@class, '{classNumberSelector}')]").text
+    number = [int(num) for num in re.findall(r'\d+', classNumber.text)]
+    return number
+
+def getVideoAndSubInfo (driver):
+    video_info = None
+    subs_info = None
+    elements = driver.find_elements(By.XPATH,'//script[contains(text(), "serverC")]')
+    for element in elements:
+        # Extract the content of the script element using JavaScript
+        script_content = driver.execute_script("return arguments[0].textContent;", element)
+        # Clean up the content by removing escaped double quotes
+        cleaned_script_content = script_content.replace('\\', '')
+        videoPattern = r'\"serverC\":{(.*?)\}\}'
+        # Use re.search to find the first matching pattern in the text
+        videoMatch = re.search(videoPattern, cleaned_script_content)
+        if videoMatch and video_info == None:
+            video_info_str = videoMatch.group(0)
+            #convert the string to json
+            video_info = json.loads("{" + video_info_str)
+            videoMatch = None
+        # Define the regex pattern
+        subPattern = r'\"movin\":{(.*?)\}\}'
+        # Use regex to find the sub info
+        subMatch = re.search(subPattern, cleaned_script_content)
+        if subMatch and subs_info == None:
+            sub_info_str = subMatch.group(0)
+            subs_info = json.loads("{" + sub_info_str)
+            subMatch = None
+        if video_info and subs_info:
+            break
+    return video_info, subs_info
 
 def work ():
     try:
@@ -139,7 +179,6 @@ def work ():
         # Enable Performance Logging of Chrome.
         desired_capabilities = DesiredCapabilities.CHROME
         desired_capabilities["goog:loggingPrefs"] = {"performance": "ALL"}
-
         # Create the webdriver object and pass the arguments
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--mute-audio")
@@ -150,19 +189,15 @@ def work ():
         chrome_options.add_argument("--disable-notifications")
         chrome_options.add_argument("--disable-popup-blocking")
         chrome_options.add_argument("--incognito")
-        
-
         # Startup the chrome webdriver with executable path and
         # pass the chrome options and desired capabilities as
         # parameters.
-        
         service = Service(webdriver_path)
         driver = uc.Chrome(
             service = service,
             options = chrome_options,
             desired_capabilities = desired_capabilities,
         )
-
         driver.get("https://platzi.com/login/")
         load_dotenv()
         emailInput = driver.find_element(
@@ -179,44 +214,52 @@ def work ():
         )
         submitBtn.click()
 
-        checkCaptcha = driver.find_elements(By.CLASS_NAME, checkCaptchaSelector)
+        checkCaptcha = driver.find_elements(By.ID, checkCaptchaSelector)
         while not checkCaptcha:
-            checkCaptcha = driver.find_elements(By.CLASS_NAME, checkCaptchaSelector)
-
+            checkCaptcha = driver.find_elements(By.ID, checkCaptchaSelector)
         driver.get(startUrl)
-
         # Check the name of the video
-        check = driver.find_elements(By.CLASS_NAME, checkVideoSelector)
-        lecture = driver.find_elements(By.CLASS_NAME, checkLectureSelector)
+        lecture = driver.find_elements(By.XPATH, f"//*[contains(@class, '{checkLectureSelector}')]")
         quiz = driver.find_elements(By.CLASS_NAME, checkQuizSelector)
         playground = driver.find_elements(By.CLASS_NAME, checkPlaygroundSelector)
-
-        checkCourseName = driver.find_elements(By.CLASS_NAME, courseNameSelector)
-        if len(checkCourseName) != 0:
-            courseName = driver.find_element(
-                By.CLASS_NAME, courseNameSelector
-            ).text.split("\n")[0]
+        content = driver.find_elements(By.XPATH, f"//*[contains(@class, '{contentSelector}')]")
+        checkCourseName = driver.find_element(By.CSS_SELECTOR, f"[data-qa='{courseNameSelector}']")
+        if checkCourseName:
+            courseName = checkCourseName.text
             courseName = re.sub(r"[^\w\s]", "", courseName)
             createFolder("\\videos\\{}".format(courseName))
-
+        if len(quiz) == 0 and len(lecture) == 0 and len(content) == 0 and len(playground) == 0:
+            videoPlayer = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, videoDivSelector)))
+        else:
+            videoPlayer = None
+        
         print("Finding videos...")
         while (
-            not len(check) == 0
+            videoPlayer != None
             or len(lecture) != 0
             or len(quiz) != 0
             or len(playground) != 0
+            or len(content) != 0
         ):
             # Check the name of the video
-            check = driver.find_elements(By.CLASS_NAME, checkVideoSelector)
+            # check = driver.find_elements(By.CLASS_NAME, checkVideoSelector)
+            # check = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, checkVideoSelector)))
             lecture = []
             playground = []
             quiz = []
             content = []
-            if len(check) == 0:
-                quiz = driver.find_elements(By.CLASS_NAME, checkQuizSelector)
-                playground = driver.find_elements(By.CLASS_NAME, checkPlaygroundSelector)
-                lecture = driver.find_elements(By.CLASS_NAME, checkLectureSelector)
-                content = driver.find_elements(By.CLASS_NAME, "MaterialView-video")
+            quiz = driver.find_elements(By.CLASS_NAME, checkQuizSelector)
+            playground = driver.find_elements(By.CLASS_NAME, checkPlaygroundSelector)
+            lecture = driver.find_elements(By.CLASS_NAME, checkLectureSelector)
+            content = driver.find_elements(By.XPATH, f"//*[contains(@class, '{contentSelector}')]")
+            try:
+                if len(quiz) == 0 and len(lecture) == 0 and len(content) == 0 and len(playground) == 0:
+                    videoPlayer = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, videoDivSelector)))
+                else:
+                    videoPlayer = None
+            except:
+                videoPlayer = None
+            if videoPlayer == None:
                 if len(quiz) != 0:
                     jumpNext = driver.find_element(
                         By.CLASS_NAME, skipQuizBtnSelector
@@ -224,16 +267,8 @@ def work ():
                     jumpNext.click()
                 elif len(lecture) != 0:
                     createFolder("\\videos\\" + courseName + "\\lectures")
-                    nameClass = driver.find_element(
-                        By.CLASS_NAME, classNameSelector
-                    ).text.split("\n")[0]
-                    number = (
-                        driver.find_element(By.CLASS_NAME, classNameSelector)
-                        .text.split("\n")[1]
-                        .split("/")
-                    )
-                    # Remove characters for windows name file
-                    nameClass = re.sub(r"[^\w\s]", "", nameClass)
+                    nameClass = getClassName(driver)
+                    number = getClassNumber(driver)
                     nameClass = number[0] + ". " + nameClass
                     lecturesUrls.append(number[0] + ". " + driver.current_url)
                     # Execute Chrome dev tool command to obtain the mhtml file
@@ -253,79 +288,50 @@ def work ():
                     )
                     jumpNext.click()
                 elif len(content) != 0:
-                    jumpNext = driver.find_element(
-                        By.CLASS_NAME, nextClassBtnSelector
-                    )
-                    jumpNext.click()
+                    btnNext = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//*[contains(@class, '{nextClassBtnSelector}')]")))
+                    if btnNext.is_enabled():
+                        btnNext.click()
                 elif len(playground) != 0:
                     jumpNext = driver.find_element(
                         By.CLASS_NAME, nextClassBtnSelector
                     )
                     jumpNext.click()
-                check = driver.find_elements(By.CLASS_NAME, checkVideoSelector)
-            if not len(check) == 0:
-                nameClass = driver.find_element(
-                    By.CLASS_NAME, classNameSelector
-                ).text.split("\n")[0]
-                number = (
-                    driver.find_element(By.CLASS_NAME, classNameSelector)
-                    .text.split("\n")[1]
-                    .split("/")
-                )
-                # Remove characters for windows name file
-                nameClass = re.sub(r"[^\w\s]", "", nameClass)
-                nameClass = number[0] + ". " + nameClass
-                # this is to the check if the video is already played
-                videoDiv = driver.find_element(By.CLASS_NAME, videoDivSelector)
-                classes = videoDiv.get_attribute("class")
-                if "vjs-has-started" not in classes:
-                    videoDiv.click()
-                    # play.click()
-                # This is to change the server to C
-                driver.execute_script(
-                    'const a = document.getElementById("ServerPicker"); const news = a["children"]; for (const child of news) { if (child.innerText === "Server C" && !child.classList.contains("className")) { child.click(); break; } }'
-                )
-                time.sleep(2)
-                downloadResources(driver, courseName, nameClass)
-                time.sleep(1)
-                # Gets all the logs from performance in Chrome
-                logs = driver.get_log("performance")
-                subtitles[nameClass] = []
+            if videoPlayer:
+                video_info = None
+                subs_info = None
+                nameClass = getClassName(driver)
+                number = getClassNumber(driver)
+                nameClass = f"{number[0]}. {nameClass}"
+                
+                video_info, subs_info = getVideoAndSubInfo(driver)
+                
+                if video_info:
+                    video = video_info["serverC"]["hls"]
+                    respVideo = requests.get(video)
+                    # check the status code
+                    if respVideo.status_code == 200:
+                        videosUrl[nameClass] = video
+                        video = ""
+                
+                if subs_info:
+                    # subtitles[nameClass] = []
+                    subtitles[nameClass] = subs_info
+                    
                 if inputOption == "2":
                     print_progress_bar(int(number[0]), int(number[1]))
-                for log in logs:
-                    message = log["message"]
-                    if "Network.requestWillBeSent" in message:
-                        data = json.loads(message)["message"]
-                        if "params" in data and "request" in data["params"]:
-                            request = data["params"]["request"]
-                            if "url" in request:
-                                url = request["url"]
-                                if "https://mdstrm.com/video/" in url:
-                                    video = url
-                                    # print(url)
-                                elif "vtt" in url:
-                                    subtitles[nameClass].append(url)
-                                    # print(url)
-                        # close the browser
-                respVideo = requests.get(video)
-                if not len(subtitles[nameClass]) > 0:
-                    subtitles.pop(nameClass)
-                # check the status code
-                if respVideo.status_code == 200:
-                    videosUrl[nameClass] = video
-                    # strCommand = 'ffmpeg -i {} -c copy "{}.mp4"'.format(video, nameClass)
-                    # subprocess.run(strCommand, shell=True)
                 if inputOption == "1":
                     break
-                btnNext = driver.find_element(By.CLASS_NAME, nextClassBtnSelector)
+                
+                btnNext = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//*[contains(@class, '{nextClassBtnSelector}')]")))
                 # check if the button is disabled
                 if number[0] == number[1] :
                     break
-                elif "disabled" not in btnNext.get_attribute("class"):
+                elif btnNext.is_enabled():
                     btnNext.click()
                 else:
                     break
+            time.sleep(2)
+            driver.refresh()
         driver.close()
         if len(lecturesUrls) > 0:
             with open(f"./videos/{courseName}/lectures/Lectures Urls.txt", "a") as f:
