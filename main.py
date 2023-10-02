@@ -30,7 +30,6 @@ checkCaptchaSelector = "MainLayout"
 checkVideoSelector = "VideoPlayer"
 checkLectureSelector = "styles_Lecture"
 checkQuizSelector = "StartQuizOverview-buttons"
-checkPlaygroundSelector = "MaterialIframe"
 contentSelector = 'styles_IFrame'
 
 courseNameSelector = "course_name"
@@ -49,7 +48,6 @@ selectorErrorMsgs = {
     checkVideoSelector: "There was an error finding the video",
     checkLectureSelector: "There was an error finding the lecture",
     checkQuizSelector: "There was an error finding the quiz",
-    checkPlaygroundSelector: "There was an error finding the playground",
     courseNameSelector: "There was an error finding the course name",
     videoDivSelector: "There was an error finding the video",
     skipQuizBtnSelector: "There was an error finding the skip quiz button",
@@ -138,6 +136,14 @@ def getClassNumber(driver):
     number = [int(num) for num in re.findall(r'\d+', classNumber.text)]
     return number
 
+def nextPage(driver):
+    btnNext = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//*[contains(@class, '{nextClassBtnSelector}')]")))
+    # check if the button is disabled
+    if btnNext.is_enabled():
+        btnNext.click()
+    else:
+        print("There was an error finding the next class button")
+
 def getVideoAndSubInfo (driver):
     video_info = None
     subs_info = None
@@ -221,90 +227,69 @@ def work ():
         # Check the name of the video
         lecture = driver.find_elements(By.XPATH, f"//*[contains(@class, '{checkLectureSelector}')]")
         quiz = driver.find_elements(By.CLASS_NAME, checkQuizSelector)
-        playground = driver.find_elements(By.CLASS_NAME, checkPlaygroundSelector)
         content = driver.find_elements(By.XPATH, f"//*[contains(@class, '{contentSelector}')]")
         checkCourseName = driver.find_element(By.CSS_SELECTOR, f"[data-qa='{courseNameSelector}']")
         if checkCourseName:
             courseName = checkCourseName.text
             courseName = re.sub(r"[^\w\s]", "", courseName)
             createFolder("\\videos\\{}".format(courseName))
-        if len(quiz) == 0 and len(lecture) == 0 and len(content) == 0 and len(playground) == 0:
+        if len(quiz) == 0 and len(lecture) == 0 and len(content) == 0:
             videoPlayer = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, videoDivSelector)))
         else:
             videoPlayer = None
-        
         print("Finding videos...")
         while (
             videoPlayer != None
-            or len(lecture) != 0
+            or lecture != None
             or len(quiz) != 0
-            or len(playground) != 0
             or len(content) != 0
         ):
-            # Check the name of the video
-            # check = driver.find_elements(By.CLASS_NAME, checkVideoSelector)
-            # check = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, checkVideoSelector)))
-            lecture = []
-            playground = []
+            lecture = None
             quiz = []
             content = []
             quiz = driver.find_elements(By.CLASS_NAME, checkQuizSelector)
-            playground = driver.find_elements(By.CLASS_NAME, checkPlaygroundSelector)
-            lecture = driver.find_elements(By.CLASS_NAME, checkLectureSelector)
+            try:
+                if len(quiz) == 0:
+                    lecture = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, f"//*[contains(@class, '{checkLectureSelector}')]")))
+                else:
+                    lecture = None
+            except:
+                lecture = None
             content = driver.find_elements(By.XPATH, f"//*[contains(@class, '{contentSelector}')]")
             try:
-                if len(quiz) == 0 and len(lecture) == 0 and len(content) == 0 and len(playground) == 0:
+                if len(quiz) == 0 and lecture == None and len(content) == 0:
                     videoPlayer = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, videoDivSelector)))
                 else:
                     videoPlayer = None
             except:
                 videoPlayer = None
-            if videoPlayer == None:
-                if len(quiz) != 0:
-                    jumpNext = driver.find_element(
-                        By.CLASS_NAME, skipQuizBtnSelector
-                    )
-                    jumpNext.click()
-                elif len(lecture) != 0:
-                    createFolder("\\videos\\" + courseName + "\\lectures")
-                    nameClass = getClassName(driver)
-                    number = getClassNumber(driver)
-                    nameClass = number[0] + ". " + nameClass
-                    lecturesUrls.append(number[0] + ". " + driver.current_url)
-                    # Execute Chrome dev tool command to obtain the mhtml file
-                    time.sleep(1)
-                    res = driver.execute_cdp_cmd("Page.captureSnapshot", {})
-                    # Write the file locally
-                    with open(
-                        "./videos/{}/lectures/{}.mhtml".format(courseName, nameClass),
-                        "w",
-                        newline="",
-                    ) as f:
-                        f.write(res["data"])
-                    if inputOption == "1":
-                        break
-                    jumpNext = driver.find_element(
-                        By.CLASS_NAME, nextClassBtnSelector
-                    )
-                    jumpNext.click()
-                elif len(content) != 0:
-                    btnNext = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//*[contains(@class, '{nextClassBtnSelector}')]")))
-                    if btnNext.is_enabled():
-                        btnNext.click()
-                elif len(playground) != 0:
-                    jumpNext = driver.find_element(
-                        By.CLASS_NAME, nextClassBtnSelector
-                    )
-                    jumpNext.click()
-            if videoPlayer:
+            if len(quiz) == 0:
+                number = getClassNumber(driver)
+            if len(quiz) != 0:
+                jumpNext = driver.find_element(
+                    By.CLASS_NAME, skipQuizBtnSelector
+                )
+                jumpNext.click()
+            elif lecture != None:
+                createFolder("\\videos\\" + courseName + "\\lectures")
+                nameClass = getClassName(driver)
+                
+                nameClass = f"{number[0]}. {nameClass}"
+                lecturesUrls.append(f"{number[0]}. {driver.current_url}")
+                res = driver.execute_cdp_cmd("Page.captureSnapshot", {})
+                # Write the file locally
+                with open(
+                    "./videos/{}/lectures/{}.mhtml".format(courseName, nameClass),
+                    "w",
+                    newline="",
+                ) as f:
+                    f.write(res["data"])
+            elif videoPlayer:
                 video_info = None
                 subs_info = None
                 nameClass = getClassName(driver)
-                number = getClassNumber(driver)
                 nameClass = f"{number[0]}. {nameClass}"
-                
                 video_info, subs_info = getVideoAndSubInfo(driver)
-                
                 if video_info:
                     video = video_info["serverC"]["hls"]
                     respVideo = requests.get(video)
@@ -312,24 +297,17 @@ def work ():
                     if respVideo.status_code == 200:
                         videosUrl[nameClass] = video
                         video = ""
-                
                 if subs_info:
-                    # subtitles[nameClass] = []
                     subtitles[nameClass] = subs_info
-                    
-                if inputOption == "2":
-                    print_progress_bar(int(number[0]), int(number[1]))
-                if inputOption == "1":
-                    break
                 
-                btnNext = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//*[contains(@class, '{nextClassBtnSelector}')]")))
-                # check if the button is disabled
-                if number[0] == number[1] :
-                    break
-                elif btnNext.is_enabled():
-                    btnNext.click()
-                else:
-                    break
+            if inputOption == "2":
+                    print_progress_bar(int(number[0]), int(number[1]))
+            if inputOption == "1":
+                break
+            if number[0] == number[1] :
+                break
+            elif len(quiz) == 0:
+                nextPage(driver)
             time.sleep(2)
             driver.refresh()
         driver.close()
