@@ -129,6 +129,9 @@ def nextPage(driver):
         btnNext.click()
     else:
         print("There was an error finding the next class button")
+        
+def format_entry(name, url):
+    return f"#EXTINF:-1,{name}\n{url}"
 
 def getVideoAndSubInfo (driver):
     video_info = None
@@ -211,6 +214,7 @@ def work ():
             checkCaptcha = driver.find_elements(By.ID, checkCaptchaSelector)
         driver.get(startUrl)
         # Check the name of the video
+        time.sleep(2)
         lecture = driver.find_elements(By.XPATH, f"//*[contains(@class, '{checkLectureSelector}')]")
         quiz = driver.find_elements(By.CLASS_NAME, checkQuizSelector)
         content = driver.find_elements(By.XPATH, f"//*[contains(@class, '{contentSelector}')]")
@@ -224,6 +228,9 @@ def work ():
         else:
             videoPlayer = None
         print("Finding videos...")
+        if not checkFileExists(f"\\videos\\{courseName}\\playlist.m3u"):
+            with open(f"./videos/{courseName}/playlist.m3u", "w") as file:
+                file.write("#EXTM3U\n")
         while (
             videoPlayer != None
             or lecture != None
@@ -282,6 +289,8 @@ def work ():
                     # check the status code
                     if respVideo.status_code == 200:
                         videosUrl[nameClass] = video
+                        with open(f"./videos/{courseName}/playlist.m3u", "a") as file:
+                            file.write(format_entry(nameClass, video) + "\n")
                         video = ""
                 if subs_info:
                     subtitles[nameClass] = subs_info["movin"]["subtitles"]
