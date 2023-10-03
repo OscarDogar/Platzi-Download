@@ -14,7 +14,7 @@ import multiprocessing
 
 # callprocess
 from process import callProcess
-from utils import createFolder, create_env_file, remove_word_from_file, print_progress_bar
+from utils import createFolder, create_env_file, remove_word_from_file, print_progress_bar, checkFolderExists, checkFileExists
 
 # read .env file
 from dotenv import load_dotenv
@@ -34,6 +34,8 @@ contentSelector = 'styles_IFrame'
 
 courseNameSelector = "course_name"
 videoDivSelector = "video-js"
+resourceBtnSelector = "resources_tab"
+checkAvailableResourcesSelector = "Archivos de la clase"
 
 skipQuizBtnSelector = "StartQuizOverview-btn--skip"
 classNameSelector = "MaterialHeading-title"
@@ -59,48 +61,32 @@ selectorErrorMsgs = {
 #endregion
 
 def downloadResources(driver, courseName, nameClass):
-    checkDownloadBtn = driver.find_elements(By.CLASS_NAME, checkDownloadableResourcesSelector) #zip download btn
-    #when the download zip btn is not available
-    checkDownloadBtn2 = driver.find_elements(By.CLASS_NAME, checkDownloadableFileSelector)
-    href = ""
-    fileName = ""
-    extension = ""
-    if checkDownloadBtn:
-        createFolder("\\videos\\" + courseName + "\\resources")
-        DownloadBtn = driver.find_element(By.CLASS_NAME, checkDownloadableResourcesSelector)
-        # get href
-        href = DownloadBtn.get_attribute("href")
-        if href != "":
-                # get the file extension
-                extension = href.split(".")[-1]
-                #!! ERRORS
-                response = requests.get(href)
-                path = "./videos/{}/resources/".format(courseName)
-                if response.status_code == 200:
-                    if extension == "pdf":
-                        with open(f"{path}{fileName}", "wb") as f:
-                            f.write(response.content)
-                    else:
-                        with open(f"{path}/{nameClass}.{extension}", "wb") as f:
-                            f.write(response.content)
-    elif checkDownloadBtn2:
-        createFolder("\\videos\\" + courseName + "\\resources")
-        #download the files on checkDownloadBtn2
-        for btn in checkDownloadBtn2:
-            DownloadBtn = btn.find_element(By.XPATH, "..")
-            fileName = DownloadBtn.text
-            href = DownloadBtn.get_attribute("href")
-            if href != "":
-                # get the file extension
-                extension = href.split(".")[-1]
-                #!! ERRORS
-                response = requests.get(href)
-                path = "./videos/{}/resources/".format(courseName)
-                #get the number from the nameClass
-                number = nameClass.split(".")[0]
-                if response.status_code == 200:
-                    with open(f"{path}{number}. {fileName}", "wb") as f:
-                        f.write(response.content)
+    #find the resource button
+    checkResourceBtn = driver.find_element(By.CSS_SELECTOR, f"[data-qa='{resourceBtnSelector}']")
+    if checkResourceBtn:
+        checkResourceBtn.click()
+    try:
+        checkAvailableResources = WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.XPATH, f"//*[contains(text(), '{checkAvailableResourcesSelector}')]")))
+    except:
+        checkAvailableResources = None
+    if checkAvailableResources:
+        download_elements = driver.find_elements(By.CSS_SELECTOR, "a[download]")
+        if download_elements:
+            if not checkFolderExists(f"\\videos\\{courseName}\\resources"):
+                createFolder("\\videos\\" + courseName + "\\resources")
+            #get the href of the download links
+            for element in download_elements:
+                link = element.get_attribute("href")
+                #get the file name
+                fileName = f"{nameClass.split('.')[0]}. {element.text}"
+                #download the file
+                if link != "":
+                    if not checkFileExists(f"\\videos\\{courseName}\\resources\\{fileName}"):
+                        response = requests.get(link)
+                        if response.status_code == 200:
+                            path = "./videos/{}/resources/".format(courseName)
+                            with open(f"{path}{fileName}", "wb") as f:
+                                f.write(response.content)
 
 def menu():
     inputOption = input(
@@ -299,6 +285,7 @@ def work ():
                         video = ""
                 if subs_info:
                     subtitles[nameClass] = subs_info["movin"]["subtitles"]
+                downloadResources(driver, courseName, nameClass)
             if inputOption == "2":
                     print_progress_bar(int(number[0]), int(number[1]))
             if inputOption == "1":
