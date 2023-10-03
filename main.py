@@ -298,8 +298,7 @@ def work ():
                         videosUrl[nameClass] = video
                         video = ""
                 if subs_info:
-                    subtitles[nameClass] = subs_info
-                
+                    subtitles[nameClass] = subs_info["movin"]["subtitles"]
             if inputOption == "2":
                     print_progress_bar(int(number[0]), int(number[1]))
             if inputOption == "1":

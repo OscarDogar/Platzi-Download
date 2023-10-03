@@ -55,67 +55,17 @@ def checkDuration(process, command):
 #endregion
 
 def downloadSubs(subtitles, courseName):
-    regex = r"\-[a-zA-Z]{2,3}\-"
-    anotherRegex = r"\.[a-zA-Z]{2,3}\-"
-    anotherRegex2 = r"\_[a-zA-Z]{2,3}\-"
-    moreRegex = r"\-[a-zA-Z]{2,3}\."
-    moreRegex2 = r"\d[a-zA-Z]{2}\%"
-    moreRegex3 = r"\-[a-zA-Z]{2}\%"
-    anotherRegex3 = r"\d[a-zA-Z]{2,3}\-"
-    anotherRegex4 = r"\/[a-zA-Z]{2,3}\-"
     if not checkFolderExists(f"\\videos\\{courseName}\\Subs"):
         subprocess.run(f"cd videos/{courseName} && mkdir Subs", shell=True)
     for key, value in subtitles.items():
-        for sub in value:
-            name = key
-            # region Get the language of the subtitle
-            match = (
-                re.search(regex, sub)
-                or re.search(anotherRegex, sub)
-                or re.search(anotherRegex2, sub)
-                or re.search(anotherRegex3, sub)
-                or re.search(anotherRegex4, sub)
-                or re.search(moreRegex, sub)
-                or re.search(moreRegex2, sub)
-                or re.search(moreRegex3, sub)
-            )
-            checkSubtitleExtension = re.search(r"\.vtt", sub)
-            if match and checkSubtitleExtension:
-                language = sub[match.start() + 1 : match.end() - 1].lower()
-                if language == "sp" or language == "es":
-                    language = "spa"
-                    name = name + f".{language}.vtt"
+        if len(value) > 0:
+            for sub in value:
+                name = f"{key}.{sub['language']}.vtt"
+                if not checkFileExists(f"\\videos\\{courseName}\\Subs\\{name}"):
                     subprocess.run(
-                        f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"',
+                        f'cd videos/{courseName}/Subs && curl {sub["source"]} -o "{name}"',
                         shell=True,
                     )
-                else:
-                    name = name + f".{language}.vtt"
-                    subprocess.run(
-                        f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"',
-                        shell=True,
-                    )
-            elif ( "material_id" in  sub.lower() ):
-                language = "en"
-                name = name + f".{language}.vtt"
-                subprocess.run(
-                    f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"',
-                    shell=True,
-                )
-            elif ("automatic" in sub.lower() 
-                or "transcribe" in sub.lower() 
-                or "_class_" in sub.lower()
-                or "1280x720" in sub.lower()
-                or "1920x1080" in sub.lower()
-                ):
-                language = "spa"
-                name = name + f".{language}.vtt"
-                subprocess.run(
-                    f'cd videos/{courseName}/Subs && curl {sub} -o "{name}"', shell=True
-                )
-            else:
-                print(f"No match found for {sub}")
-            # endregion
 
 #region Create and run commands
 def createCommands(info, courseName):
@@ -161,12 +111,6 @@ def callProcess(info, subtitles, courseName):
     processNumber = 3
     pool = Pool(processes=processNumber)
     groupNumber = math.ceil(len(commands) / processNumber)
-    # print("------------------------")
-    # print(
-    #     f"{len(commands)} videos will be downloaded divided into groups of {processNumber} for a total of {groupNumber} groups."
-    # )
-    # print("------------------------")
-    # Divide the commands into groups of processNumber and run them in parallel
     for i in range(0, len(commands), processNumber):
         results = []
         group = commands[i : i + processNumber]
@@ -180,7 +124,6 @@ def callProcess(info, subtitles, courseName):
                     count += 1
         #print in a new line 
         print(f"\nGroup {i//processNumber + 1} of {groupNumber} completed with {count} failed conversions")
-
     # Close the pool and wait for all processes to complete
     # print(results)
     pool.close()
