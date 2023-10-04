@@ -31,6 +31,7 @@ checkVideoSelector = "VideoPlayer"
 checkLectureSelector = "styles_Lecture"
 checkQuizSelector = "StartQuizOverview-buttons"
 contentSelector = 'styles_IFrame'
+checkExamSelector = 'StartExamOverview'
 
 courseNameSelector = "course_name"
 videoDivSelector = "video-js"
@@ -237,6 +238,9 @@ def work ():
             or len(quiz) != 0
             or len(content) != 0
         ):
+            exam = driver.find_elements(By.CLASS_NAME, checkExamSelector)
+            if len(exam) != 0:
+                break
             lecture = None
             quiz = []
             content = []
