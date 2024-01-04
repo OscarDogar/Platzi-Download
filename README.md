@@ -54,6 +54,7 @@ Si lo deseas puedes simplemente descargar el ejecutable del último release el c
 * not found en los subtítulos, esto es debido a que no cumplió con algunas validaciones para poderlo descargar.
 * All retries failed. es cuando al momento de descargar un video no se pudo descargar algunas de las partes, por lo que se salta este video y sigue al siguiente.
 * Si al momento de estar buscando los videos se le da click a otra parte que redireccione a una página distinta, Genera un problema.
+* En algunos casos, debido a que el servidor puede presenta problemas no se podra descargar el video por lo que se salta y se pasa al siguiente video. 
 
 ## Sponsor [<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/60854050/263421335-c7468ed6-7853-42c6-9de9-05be51da1ca2.png" width="25"/>](https://github.com/sponsors/OscarDogar)
 
@@ -68,7 +69,7 @@ con el nombre de cada uno de los cursos y dentro de esas carpetas estarán los v
 
 ## Additional
 
-Para ver los comentarios de las clases sin necesidad de iniciar sesion. Se puede utilizar [uBlock Origin](https://github.com/gorhill/uBlock) con los siguientes filtros:
+[Funciona en la interfaz anterior de platzi] Para ver los comentarios de las clases sin necesidad de iniciar sesion. Se puede utilizar [uBlock Origin](https://github.com/gorhill/uBlock) con los siguientes filtros:
 ```
 platzi.com##.CommentsOverlay-note:remove()
 platzi.com##.CommentsOverlay-note
