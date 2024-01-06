@@ -9,24 +9,26 @@ import sys
 from utils import checkFolderExists, checkFileExists
 from downloadVideoInfo import getInfo
 
-#region Progress bar
+
+# region Progress bar
 def print_progress_bar(progress):
     bar_length = 50
     if progress > 100:
         progress = 100
     filled_length = int(progress * bar_length // 100)
-    bar = '=' * filled_length + '-' * (bar_length - filled_length)
-    sys.stdout.write(f'\r[{bar}] {progress:.2f}%')
+    bar = "=" * filled_length + "-" * (bar_length - filled_length)
+    sys.stdout.write(f"\r[{bar}] {progress:.2f}%")
     sys.stdout.flush()
+
 
 def checkDuration(process, command):
     duration = None
     progress = 0
     # Regular expression pattern to extract the duration and progress from FFmpeg's output
-    duration_pattern = re.compile(r'Duration: (\d{2}):(\d{2}):(\d{2}).(\d{2})')
-    progress_pattern = re.compile(r'time=(\d{2}):(\d{2}):(\d{2}).(\d{2})')
-    for line in iter(process.stderr.readline, b''):
-        line = line.decode('utf-8')  # Decode the bytes to string
+    duration_pattern = re.compile(r"Duration: (\d{2}):(\d{2}):(\d{2}).(\d{2})")
+    progress_pattern = re.compile(r"time=(\d{2}):(\d{2}):(\d{2}).(\d{2})")
+    for line in iter(process.stderr.readline, b""):
+        line = line.decode("utf-8")  # Decode the bytes to string
         # Search for duration
         duration_match = duration_pattern.search(line)
         if duration_match:
@@ -36,10 +38,12 @@ def checkDuration(process, command):
         progress_match = progress_pattern.search(line)
         if progress_match and duration:
             hours, minutes, seconds, milliseconds = map(int, progress_match.groups())
-            current_time = (hours * 3600) + (minutes * 60) + seconds + (milliseconds / 100)
+            current_time = (
+                (hours * 3600) + (minutes * 60) + seconds + (milliseconds / 100)
+            )
             progress = (current_time / duration) * 100
             print_progress_bar(progress)
-        
+
         if (
             "failed: Error number -138 occurred" in line
             or "Unable to open resource:" in line
@@ -52,7 +56,10 @@ def checkDuration(process, command):
         return f"Conversion failed for {command}"
     else:
         return f"Conversion succeeded for {command}"
-#endregion
+
+
+# endregion
+
 
 def downloadSubs(subtitles, courseName):
     if not checkFolderExists(f"\\videos\\{courseName}\\Subs"):
@@ -66,8 +73,21 @@ def downloadSubs(subtitles, courseName):
                         f'cd videos/{courseName}/Subs && curl {sub["source"]} -o "{name}"',
                         shell=True,
                     )
+                    # convert to srt
+                    subprocess.run(
+                        f'cd videos/{courseName}/Subs && ffmpeg -i "{name}" "{name[:-4]}.srt"',
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        stdin=subprocess.DEVNULL,
+                    )
+                    # remove the vtt file
+                    subprocess.run(
+                        f'cd videos/{courseName}/Subs && del "{name}"', shell=True
+                    )
 
-#region Create and run commands
+
+# region Create and run commands
 def createCommands(info, courseName):
     commands = []
     errorGettingClasses = []
@@ -90,13 +110,17 @@ def createCommands(info, courseName):
             print(error)
     return commands
 
+
 def run_command(command):
     process = subprocess.Popen(
         command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
     )
     result = checkDuration(process, command)
     return result
-#endregion
+
+
+# endregion
+
 
 def callProcess(info, subtitles, courseName):
     if len(subtitles) > 0:
@@ -105,8 +129,8 @@ def callProcess(info, subtitles, courseName):
         print("No subtitles to download")
     # current working directory
     commands = createCommands(info, courseName)
-    if  checkFolderExists(f"\\videos\\{courseName}\\videoInfo"):
-        subprocess.run(f'cd videos/{courseName}/ && rmdir videoInfo', shell=True)
+    if checkFolderExists(f"\\videos\\{courseName}\\videoInfo"):
+        subprocess.run(f"cd videos/{courseName}/ && rmdir videoInfo", shell=True)
     # Create a pool of 3 worker processes
     processNumber = 3
     pool = Pool(processes=processNumber)
@@ -122,8 +146,10 @@ def callProcess(info, subtitles, courseName):
                 if "failed" in element:
                     print("\n" + element)
                     count += 1
-        #print in a new line 
-        print(f"\nGroup {i//processNumber + 1} of {groupNumber} completed with {count} failed conversions")
+        # print in a new line
+        print(
+            f"\nGroup {i//processNumber + 1} of {groupNumber} completed with {count} failed conversions"
+        )
     # Close the pool and wait for all processes to complete
     # print(results)
     pool.close()
