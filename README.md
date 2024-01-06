@@ -77,6 +77,22 @@ platzi.com##.CommentsOverlay-note-text
 platzi.com##.CommentsOverlay
 platzi.com##div.InfinityScrollLayout:has-text(Regístrate)
 ```
+Por ejemplo, si intentas ingresar con este link: *https://platzi.com/new-home/clases/6273-intro-contenido/67112-como-es-la-vida-de-una-creadora-de-contenido/* este te redirecciona al login.
+
+Pero si se elimina la parte del *new-home*: *https://platzi.com/clases/6273-intro-contenido/67112-como-es-la-vida-de-una-creadora-de-contenido/* este link redirecciona a la antigua página en la cual los comentarios se ven de la siguiente manera:
+
+Como se puede ver, se alcanzan a leer los primeros comentarios de la parte de arriba, pero mientras más se va bajando menos se podrán ver los comentarios [Imagen izquierda]. Ya una vez con los filtros se podrán ver todos los comentarios sin tener que iniciar sesión [Imagen derecha].
+
+![image](https://github.com/OscarDogar/Platzi-Download/assets/60854050/ab3d7e99-3787-41a7-90de-855a77b92ef3)
+![image](https://github.com/OscarDogar/Platzi-Download/assets/60854050/244386a3-2f10-49ac-9700-e252f95023fa)
+
+
+
+
+
+
+
+
 
 
 
