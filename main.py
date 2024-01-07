@@ -323,7 +323,9 @@ def work():
             )
             # get href of the course
             courseLink = courseInfoLink[0].get_attribute("href")
-            if not checkFileExists(f"\\videos\\{courseName}\\folder.png"):
+            if not checkFileExists(
+                f"\\videos\\{courseName}\\folder.png"
+            ) and not checkFileExists(f"\\videos\\{courseName}\\folder.jpg"):
                 getCourseImage(driver, courseLink, courseName)
                 driver.get(startUrl)
         if len(quiz) == 0 and len(lecture) == 0 and len(content) == 0:
@@ -338,65 +340,20 @@ def work():
                 file.write("#EXTM3U\n")
         nameClass = ""
         countVideoErrors = 0
-        while (
-            videoPlayer != None
-            or lecture != None
-            or len(quiz) != 0
-            or len(content) != 0
-        ):
-            # print("name: ", nameClass)
-            exam = driver.find_elements(By.CLASS_NAME, checkExamSelector)
-            if len(exam) != 0:
-                break
-            lecture = None
-            quiz = []
-            content = []
-            quiz = driver.find_elements(By.CLASS_NAME, checkQuizSelector)
+        while True:
             try:
-                if len(quiz) == 0:
-                    lecture = WebDriverWait(driver, 5).until(
-                        EC.visibility_of_element_located(
-                            (
-                                By.XPATH,
-                                f"//*[contains(@class, '{checkLectureSelector}')]",
-                            )
-                        )
-                    )
-                else:
-                    lecture = None
+                lecture = driver.find_element(
+                    By.XPATH, f"//*[contains(@class, '{checkLectureSelector}')]"
+                )
             except:
                 lecture = None
-            content = driver.find_elements(
-                By.XPATH, f"//*[contains(@class, '{contentSelector}')]"
-            )
             try:
-                if len(quiz) == 0 and lecture == None and len(content) == 0:
-                    videoPlayer = WebDriverWait(driver, 10).until(
-                        EC.element_to_be_clickable((By.CLASS_NAME, videoDivSelector))
-                    )
-                else:
-                    videoPlayer = None
+                videoPlayer = driver.find_element(By.CLASS_NAME, videoDivSelector)
             except:
                 videoPlayer = None
-            if len(quiz) == 0:
+            if videoPlayer or lecture:
                 number = getClassNumber(driver)
-            if len(quiz) != 0:
-                jumpNext = driver.find_element(By.CLASS_NAME, skipQuizBtnSelector)
-                jumpNext.click()
-            elif lecture != None:
-                createFolder("\\videos\\" + courseName + "\\lectures")
-                nameClass = getClassName(driver)
-                nameClass = f"{number[0]}. {nameClass}"
-                lecturesUrls.append(f"{number[0]}. {driver.current_url}")
-                res = driver.execute_cdp_cmd("Page.captureSnapshot", {})
-                # Write the file locally
-                with open(
-                    "./videos/{}/lectures/{}.mhtml".format(courseName, nameClass),
-                    "w",
-                    newline="",
-                ) as f:
-                    f.write(res["data"])
-            elif videoPlayer:
+            if videoPlayer:
                 driver.refresh()
                 time.sleep(2)
                 video_info = None
@@ -406,6 +363,8 @@ def work():
                 video_info, subs_info = getVideoAndSubInfo(driver)
                 if video_info:
                     video = video_info["serverC"]["hls"]
+                    # print("\n")
+                    # print(f"Got video: {nameClass} {video}")
                     respVideo = requests.get(video)
                     # check the status code
                     if respVideo.status_code == 200:
@@ -424,6 +383,32 @@ def work():
                 if subs_info:
                     subtitles[nameClass] = subs_info["movin"]["subtitles"]
                 downloadResources(driver, courseName, nameClass)
+            elif lecture != None:
+                createFolder("\\videos\\" + courseName + "\\lectures")
+                nameClass = getClassName(driver)
+                nameClass = f"{number[0]}. {nameClass}"
+                lecturesUrls.append(f"{number[0]}. {driver.current_url}")
+                res = driver.execute_cdp_cmd("Page.captureSnapshot", {})
+                # Write the file locally
+                with open(
+                    "./videos/{}/lectures/{}.mhtml".format(courseName, nameClass),
+                    "w",
+                    newline="",
+                ) as f:
+                    f.write(res["data"])
+            else:
+                quiz = driver.find_elements(By.CLASS_NAME, checkQuizSelector)
+                if len(quiz) != 0:
+                    jumpNext = driver.find_element(By.CLASS_NAME, skipQuizBtnSelector)
+                    jumpNext.click()
+                else:
+                    content = driver.find_elements(
+                        By.XPATH, f"//*[contains(@class, '{contentSelector}')]"
+                    )
+                    exam = driver.find_elements(By.CLASS_NAME, checkExamSelector)
+                    if len(exam) != 0:
+                        break
+
             if inputOption == "2":
                 print_progress_bar(int(number[0]), int(number[1]))
             if inputOption == "1":
@@ -432,7 +417,18 @@ def work():
                 break
             elif len(quiz) == 0:
                 nextPage(driver)
-            time.sleep(2)
+            elif (
+                videoPlayer != None
+                and lecture != None
+                and len(quiz) != 0
+                and len(content) != 0
+            ):
+                break
+            videoPlayer = None
+            lecture = None
+            quiz = []
+            content = []
+            time.sleep(1)
         driver.close()
         if len(lecturesUrls) > 0:
             with open(f"./videos/{courseName}/lectures/Lectures Urls.txt", "a") as f:
