@@ -56,6 +56,7 @@ nextClassBtnSelector = "Button--secondary"
 
 checkDownloadableResourcesSelector = "FilesTree-download"
 checkDownloadableFileSelector = "fa-download"
+checkDownloadAllSelector = "FilesTree_FilesTree__Download"
 
 selectorErrorMsgs = {
     checkCaptchaSelector: "An error has occurred while validating the captcha.",
@@ -82,6 +83,31 @@ def downloadResources(driver, courseName, nameClass):
         return
     checkResourceBtn = checkResourceBtn[0]
     checkResourceBtn.click()
+    try:
+        downloadAllBtn = driver.find_element(
+            By.XPATH, f"//*[contains(@class, '{checkDownloadAllSelector}')]"
+        )
+        # get the href of the download links
+        if downloadAllBtn:
+            if not checkFolderExists(f"\\videos\\{courseName}\\resources"):
+                createFolder("\\videos\\" + courseName + "\\resources")
+            link = downloadAllBtn.get_attribute("href")
+            # get the download file name
+            fileName = f"{nameClass}.zip"
+            # download the file
+            if link != "":
+                if not checkFileExists(
+                    f"\\videos\\{courseName}\\resources\\{fileName}"
+                ):
+                    response = requests.get(link)
+                    if response.status_code == 200:
+                        path = "./videos/{}/resources/".format(courseName)
+                        with open(f"{path}{fileName}", "wb") as f:
+                            f.write(response.content)
+        return
+    except:
+        downloadAllBtn = None
+
     try:
         checkAvailableResources = WebDriverWait(driver, 3).until(
             EC.visibility_of_element_located(
@@ -180,7 +206,21 @@ def format_entry(name, url):
 def getVideoAndSubInfo(driver):
     video_info = None
     subs_info = None
+    driver.refresh()
+    time.sleep(2)
     elements = driver.find_elements(By.XPATH, '//script[contains(text(), "serverC")]')
+    if len(elements) == 0:
+        #try multiple times to get the video info
+        tryInfo = 0
+        while tryInfo < 3:
+            driver.refresh()
+            time.sleep(2)
+            elements = driver.find_elements(By.XPATH, '//script[contains(text(), "serverC")]')
+            if len(elements) > 0:
+                break
+            else:
+                tryInfo += 1
+                
     for element in elements:
         # Extract the content of the script element using JavaScript
         script_content = driver.execute_script(
@@ -211,6 +251,7 @@ def getVideoAndSubInfo(driver):
 
 def getCourseImage(driver, link, courseName):
     driver.get(link)
+    time.sleep(0.5)
     try:
         # Check if the element is present
         banner = driver.find_element(By.CLASS_NAME, promorBannerSelector)
@@ -342,20 +383,26 @@ def work():
         countVideoErrors = 0
         while True:
             try:
-                lecture = driver.find_element(
-                    By.XPATH, f"//*[contains(@class, '{checkLectureSelector}')]"
+                videoPlayer = WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable((By.CLASS_NAME, videoDivSelector))
                 )
             except:
-                lecture = None
-            try:
-                videoPlayer = driver.find_element(By.CLASS_NAME, videoDivSelector)
-            except:
                 videoPlayer = None
+            if not videoPlayer:
+                try:
+                    lecture = WebDriverWait(driver, 5).until(
+                        EC.visibility_of_element_located(
+                            (
+                                By.XPATH,
+                                f"//*[contains(@class, '{checkLectureSelector}')]",
+                            )
+                        )
+                    )
+                except:
+                    lecture = None
             if videoPlayer or lecture:
                 number = getClassNumber(driver)
             if videoPlayer:
-                driver.refresh()
-                time.sleep(2)
                 video_info = None
                 subs_info = None
                 nameClass = getClassName(driver)
