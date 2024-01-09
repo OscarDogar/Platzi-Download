@@ -67,6 +67,11 @@ Si lo deseas puedes simplemente descargar el ejecutable del último release el c
 Una vez completado todo el proceso quedarán los cursos dentro de la carpeta llamada "videos" y dentro estarán otras carpetas 
 con el nombre de cada uno de los cursos y dentro de esas carpetas estarán los videos, una carpeta de lectures, una carpeta con los subtítulos y otra con los recursos.
 
+Este sería el resultado dentro de la carpeta *Taller de Inglés Básico sobre Elementos de Trabajo*: 
+
+![image](https://github.com/OscarDogar/Platzi-Download/assets/60854050/d2aa50e8-a7c3-4bb6-8833-7b258e96181c)
+
+
 ## Additional
 
 [Funciona en la interfaz anterior de platzi] Para ver los comentarios de las clases sin necesidad de iniciar sesion. Se puede utilizar [uBlock Origin](https://github.com/gorhill/uBlock) con los siguientes filtros:
