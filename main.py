@@ -30,8 +30,9 @@ from utils import (
 
 # region Variables and selectors
 webdriver_path = "C:/chromedriver.exe"
-emailSelector = '//*[@id="login-v2"]/div/div/div/div[3]/form/div[2]/input'
-pwdSelector = '//*[@id="login-v2"]/div/div/div/div[3]/form/div[3]/input'
+emailSelector = "email"
+continueBtnSelector = "continueBtn"
+pwdSelector = "password"
 submitLoginBtnSelector = '//*[@id="login-v2"]/div/div/div/div[3]/form/button'
 
 checkCaptchaSelector = "MainLayout"
@@ -210,17 +211,19 @@ def getVideoAndSubInfo(driver):
     time.sleep(2)
     elements = driver.find_elements(By.XPATH, '//script[contains(text(), "serverC")]')
     if len(elements) == 0:
-        #try multiple times to get the video info
+        # try multiple times to get the video info
         tryInfo = 0
         while tryInfo < 3:
             driver.refresh()
             time.sleep(2)
-            elements = driver.find_elements(By.XPATH, '//script[contains(text(), "serverC")]')
+            elements = driver.find_elements(
+                By.XPATH, '//script[contains(text(), "serverC")]'
+            )
             if len(elements) > 0:
                 break
             else:
                 tryInfo += 1
-                
+
     for element in elements:
         # Extract the content of the script element using JavaScript
         script_content = driver.execute_script(
@@ -331,13 +334,36 @@ def work():
         )
         driver.get("https://platzi.com/login/")
         load_dotenv()
-        emailInput = driver.find_element(By.XPATH, emailSelector)
+        emailInput = driver.find_element(By.ID, emailSelector)
         emailInput.send_keys(os.environ.get("EMAIL"))
-        pwdInput = driver.find_element(By.XPATH, pwdSelector)
-        pwdInput.send_keys(os.environ.get("PWD"))
+        time.sleep(0.5)
+        continueBtn = driver.find_element(
+            By.CSS_SELECTOR, f"[data-qa='{continueBtnSelector}']"
+        )
+        # check if the button is disabled
+        if continueBtn.is_enabled():
+            continueBtn.click()
+        else:
+            print("There was an error finding the continue button")
 
-        submitBtn = driver.find_element(By.XPATH, submitLoginBtnSelector)
-        submitBtn.click()
+        pwdInput = WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located(
+                (
+                    By.ID,
+                    pwdSelector,
+                )
+            )
+        )
+        pwdInput.send_keys(os.environ.get("PWD"))
+        time.sleep(0.5)
+        continueBtn = driver.find_element(
+            By.CSS_SELECTOR, f"[data-qa='{continueBtnSelector}']"
+        )
+        # check if the button is disabled
+        if continueBtn.is_enabled():
+            continueBtn.click()
+        else:
+            print("There was an error finding the login button")
 
         checkCaptcha = driver.find_elements(By.ID, checkCaptchaSelector)
         while not checkCaptcha:
