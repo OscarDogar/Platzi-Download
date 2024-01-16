@@ -62,8 +62,8 @@ Si lo deseas puedes simplemente descargar el ejecutable del último release el c
 
 [Sponsor me <img src="https://github-production-user-asset-6210df.s3.amazonaws.com/60854050/263421335-c7468ed6-7853-42c6-9de9-05be51da1ca2.png" width="20"/>](https://github.com/sponsors/OscarDogar)
 
-## <img width="30" src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/833aa10d-de1e-472a-8123-3dc1046aa35b"/> Star this project 
-Recuerda que también puedes ayudarme dándole clic a la estrella en este repositorio en la parte superior. 
+## ⭐Star this project 
+Recuerda que también puedes ayudarme dándole clic a la estrella en este repositorio en la parte superior [<img width="30" src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/833aa10d-de1e-472a-8123-3dc1046aa35b"/>](https://github.com/OscarDogar/Platzi-Download/) 
 
 
 ## ✅Result
