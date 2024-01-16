@@ -5,7 +5,7 @@
 
 Permite descargar videos de Platzi muchos más rápido. Permite descargar tanto los videos, las lecturas, los subtítulos (si están disponibles) y los recursos de cada una de las clases. 
 
-## Requirements 
+## 📄Requirements 
 - Es **NECESARIO** tener una cuenta de suscripción a Platzi.
 - Tener instalado FFmpeg el cual puedes descargar en [https://ffmpeg.org/](https://ffmpeg.org/)
 - Tener Google Chrome instalado.
@@ -16,11 +16,11 @@ Permite descargar videos de Platzi muchos más rápido. Permite descargar tanto 
   2. *PWD* = "tucontraseña"
   3. *WORDS_TO_REMOVE*(opcional) = word1, word2, word3 (son algunas palabras que se eliminan al momento de descargar una lectura).
  
-## Installation
+## 📥Installation
 
 Si lo deseas puedes simplemente descargar el ejecutable del último release el cual puedes encontrar [aquí](https://github.com/OscarDogar/Platzi-Download/releases). 
 
-## Steps
+## 📋Steps
 
 0. Antes que todo lo primero que se deba hacer es cambiar las variables de entorno en el archivo .env que se genera al momento de ejecutar el programa
 
@@ -46,7 +46,7 @@ Si lo deseas puedes simplemente descargar el ejecutable del último release el c
 
 7. Con todas las descargas completadas, el proceso concluye y los videos, subtítulos y recursos estarán disponibles en una carpeta con el nombre de la clase dentro de la carpeta videos.
 
-## Possible failures
+## ⚠️Possible failures
 
 * Si hay caídas o desconexiones de internet es posible que se pierda la conexión y no siga descargando o pasando los videos.
 * Si se queda quieto y no avanza de una clase.
@@ -56,13 +56,17 @@ Si lo deseas puedes simplemente descargar el ejecutable del último release el c
 * Si al momento de estar buscando los videos se le da click a otra parte que redireccione a una página distinta, Genera un problema.
 * En algunos casos, debido a que el servidor puede presentar problemas no se podra descargar el video por lo que se salta y se pasa al siguiente video. 
 
-## Sponsor [<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/60854050/263421335-c7468ed6-7853-42c6-9de9-05be51da1ca2.png" width="25"/>](https://github.com/sponsors/OscarDogar)
+## 💕 Sponsor 
 
 - Si este repositorio te ha sido útil o te ha brindado ayuda, te agradecería mucho si pudieras considerar hacer clic en el botón de sponsor. Tu apoyo es lo que impulsa la mejora continua y la creación de nuevos proyectos similares a este. Juntos, podemos seguir haciendo grandes cosas. ¡Gracias por ser parte de esta comunidad!
 
 [Sponsor me <img src="https://github-production-user-asset-6210df.s3.amazonaws.com/60854050/263421335-c7468ed6-7853-42c6-9de9-05be51da1ca2.png" width="20"/>](https://github.com/sponsors/OscarDogar)
 
-## Result
+## <img width="30" src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/833aa10d-de1e-472a-8123-3dc1046aa35b"/> Star this project 
+Recuerda que también puedes ayudarme dándole clic a la estrella en este repositorio en la parte superior. 
+
+
+## ✅Result
 
 Una vez completado todo el proceso quedarán los cursos dentro de la carpeta llamada "videos" y dentro estarán otras carpetas 
 con el nombre de cada uno de los cursos y dentro de esas carpetas estarán los videos, una carpeta de lectures, una carpeta con los subtítulos y otra con los recursos.
@@ -72,7 +76,7 @@ Este sería el resultado dentro de la carpeta *Taller de Inglés Básico sobre E
 ![image](https://github.com/OscarDogar/Platzi-Download/assets/60854050/d2aa50e8-a7c3-4bb6-8833-7b258e96181c)
 
 
-## Additional
+## ➕Additional
 
 [Funciona en la interfaz anterior de platzi] Para ver los comentarios de las clases sin necesidad de iniciar sesion. Se puede utilizar [uBlock Origin](https://github.com/gorhill/uBlock) con los siguientes filtros:
 ```
