@@ -1,9 +1,8 @@
 import subprocess, glob, os, sys
 
+
 def remove_word_from_file(directory_path, words):
-    file_paths = glob.glob(
-        directory_path + "/*.mhtml"
-    )
+    file_paths = glob.glob(directory_path + "/*.mhtml")
     if not file_paths:
         return print("No lectures found")
     for file_path in file_paths:
@@ -19,40 +18,59 @@ def remove_word_from_file(directory_path, words):
             # Write the modified contents back into the file
             file.write(contents)
 
+
 def create_env_file():
-    file_path = '.env'
+    file_path = ".env"
     if not checkFileExists(file_path):
         env_variables = {
-                'EMAIL': '"Your email"',
-                'PWD': '"Your password"',
-                'WORDS_TO_REMOVE': 'Word1, Word2, Word3, Word4'
-            }
-        with open(file_path, 'w') as env_file:
+            "EMAIL": '"Your email"',
+            "PWD": '"Your password"',
+            "WORDS_TO_REMOVE": "Word1, Word2, Word3, Word4",
+        }
+        with open(file_path, "w") as env_file:
             for key, value in env_variables.items():
                 env_file.write(f"{key} = {value}\n")
 
-def print_progress_bar(progress, finalNumber):
-    bar_length = 50
-    filled_length = int(progress * bar_length // finalNumber)
-    bar = '=' * filled_length + '-' * (bar_length - filled_length)
-    sys.stdout.write(f'\r[{bar}] {progress}/{finalNumber} {progress*100/finalNumber:.2f}%')
-    sys.stdout.flush()
-    if progress == finalNumber:
-        print("\n")
 
-#region Folder and file checks
+def colorize_text(text, color_code=32):
+    # 32 = green, 31 = red ASCII color codes
+    return f"\033[{color_code}m{text}\033[0m"
+
+
+def print_progress_bar(progress, final_number):
+    bar_length = 50
+    filled_length = int(progress * bar_length // final_number)
+    bar = "█" * filled_length + "░" * (bar_length - filled_length)
+    sys.stdout.write(
+        colorize_text(
+            f"\r[{bar}] {progress}/{final_number} {progress*100/final_number:.2f}%"
+        )
+    )
+    sys.stdout.flush()
+
+    if progress == final_number:
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+
+
+# region Folder and file checks
 def checkFolderExists(folder_path):
     fullPath = os.getcwd() + folder_path
     return os.path.exists(fullPath) and os.path.isdir(fullPath)
+
 
 def checkFileExists(file_path):
     fullPath = os.getcwd() + file_path
     return os.path.isfile(fullPath) or os.path.exists(file_path)
 
+
 def createFolder(path):
     if not checkFolderExists(path):
         subprocess.run('mkdir "{}"'.format(path[1:]), shell=True)
 
+
 def checkIfExtesionExists(directory, extension):
     return any(file.endswith(extension) for file in os.listdir(directory))
-#endregion
+
+
+# endregion
