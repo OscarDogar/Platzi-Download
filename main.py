@@ -15,6 +15,7 @@ from PIL import Image
 from selenium.common.exceptions import NoSuchElementException
 from dotenv import load_dotenv
 import os
+from pyfiglet import Figlet
 
 # callprocess
 from process import callProcess
@@ -25,6 +26,7 @@ from utils import (
     print_progress_bar,
     checkFolderExists,
     checkFileExists,
+    colorize_text,
 )
 
 
@@ -143,19 +145,27 @@ def downloadResources(driver, courseName, nameClass):
 
 
 def menu():
-    inputOption = input(
-        "Do you want to download only this video or this and the following videos?\n1. Just this one\n2. This one and the following\nType: "
-    )
-    while inputOption != "1" and inputOption != "2":
-        inputOption = input(
-            "Do you want to download only this video or this and the following videos?\n1. Just this one\n2. This one and the following\nType: "
-        )
+    titleFont = Figlet(font="larry3d")
+    subTitleFont = Figlet(font="short")
+
+    # Print colored text
+    print(colorize_text(titleFont.renderText("  Platzi Download")))
+    print(colorize_text(subTitleFont.renderText("By OscarDogar")))
 
     while True:
         # The input string containing the URL
         startUrl = input("Please enter the URL of the class you want to download: ")
         if "clases" in startUrl:
             break
+    print("")
+    inputOption = input(
+        "Do you want to download only this video or this and the following videos?\n\n1. Just this one\n2. This one and the following\nType: "
+    )
+    while inputOption != "1" and inputOption != "2":
+        inputOption = input(
+            "Do you want to download only this video or this and the following videos?\n\n1. Just this one\n2. This one and the following\nType: "
+        )
+
     return inputOption, startUrl
 
 
@@ -452,7 +462,11 @@ def work():
                         video = ""
                     else:
                         countVideoErrors += 1
-                        print(f"There was an error getting the video: {nameClass}")
+                        print(
+                            colorize_text(
+                                f"There was an error getting the video: {nameClass}", 31
+                            )
+                        )
                 if subs_info:
                     subtitles[nameClass] = subs_info["movin"]["subtitles"]
                 downloadResources(driver, courseName, nameClass)
@@ -481,7 +495,6 @@ def work():
                     exam = driver.find_elements(By.CLASS_NAME, checkExamSelector)
                     if len(exam) != 0:
                         break
-
             if inputOption == "2":
                 print_progress_bar(int(number[0]), int(number[1]))
             if inputOption == "1":
@@ -516,7 +529,11 @@ def work():
             remove_word_from_file(f"./videos/{courseName}/lectures/", words_to_remove)
         print("--------Finished--------")
         if countVideoErrors > 0:
-            print(f"There were {countVideoErrors} errors getting the videos.")
+            print(
+                colorize_text(
+                    f"There were {countVideoErrors} errors getting the videos.", 31
+                )
+            )
         end_time = time.time()
         elapsed_time = end_time - start_time
         hours = int(elapsed_time // 3600)
@@ -535,11 +552,11 @@ def work():
         if match:
             selector = match.group(1)
             if selector in selectorErrorMsgs:
-                print(selectorErrorMsgs[selector])
+                print(colorize_text(selectorErrorMsgs[selector], 31))
             else:
-                print("There was an error finding the elements")
+                print(colorize_text("There was an error finding the elements", 31))
         elif "target window already closed" in str(e):
-            print("Chrome browser has been closed")
+            print(colorize_text("Chrome browser has been closed", 31))
         elif "no such element: Unable to locate element" in str(e):
             print("There was an error finding the elements")
         elif "Cannot determine loading status" in str(e):
