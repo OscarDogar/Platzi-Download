@@ -146,11 +146,10 @@ def downloadResources(driver, courseName, nameClass):
 
 def menu():
     titleFont = Figlet(font="larry3d")
-    subTitleFont = Figlet(font="short")
 
     # Print colored text
     print(colorize_text(titleFont.renderText("  Platzi Download")))
-    print(colorize_text(subTitleFont.renderText("By OscarDogar")))
+    print(colorize_text("By OscarDogar\n", "4;32"))
 
     while True:
         # The input string containing the URL
@@ -446,8 +445,7 @@ def work():
                 video_info, subs_info = getVideoAndSubInfo(driver)
                 if video_info:
                     video = video_info["serverC"]["hls"]
-                    # print("\n")
-                    # print(f"Got video: {nameClass} {video}")
+                    video = f"https://mdstrm.com/{video.split('v1/')[1]}"
                     respVideo = requests.get(video)
                     # check the status code
                     if respVideo.status_code == 200:
