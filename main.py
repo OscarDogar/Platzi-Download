@@ -336,6 +336,8 @@ def work():
         # pass the chrome options and desired capabilities as
         # parameters.
         service = Service(webdriver_path)
+        #!fix replace https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/ 
+        #! with https://storage.googleapis.com/chrome-for-testing-public/ in undetected_chromedriver\patcher.py
         driver = uc.Chrome(
             service=service,
             options=chrome_options,
