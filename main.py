@@ -27,6 +27,7 @@ from utils import (
     checkFolderExists,
     checkFileExists,
     colorize_text,
+    checkIfffmpegInstalled
 )
 
 
@@ -169,6 +170,10 @@ def menu():
 
 
 def main():
+    if not checkIfffmpegInstalled():
+        print("Please install ffmpeg")
+        input("Press enter to exit")
+        return
     create_env_file()
     work()
 
