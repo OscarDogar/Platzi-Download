@@ -72,5 +72,11 @@ def createFolder(path):
 def checkIfExtesionExists(directory, extension):
     return any(file.endswith(extension) for file in os.listdir(directory))
 
+def checkIfffmpegInstalled():
+    try:
+        subprocess.run(["ffmpeg", "-version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return True
+    except FileNotFoundError:
+        return False
 
 # endregion
