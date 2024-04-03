@@ -49,7 +49,7 @@ def getInfo(url, courseName, className):
             newUrl = res.text[positions[1] + 1 : positions[1] + 1000]
     headers = {
         "Referer": "https://platzi.com/",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
     }
     newRes = requests.get(newUrl, headers=headers)
     if newRes.status_code == 200:

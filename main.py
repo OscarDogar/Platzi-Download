@@ -27,7 +27,7 @@ from utils import (
     checkFolderExists,
     checkFileExists,
     colorize_text,
-    checkIfffmpegInstalled
+    checkIfffmpegInstalled,
 )
 
 
@@ -88,13 +88,14 @@ def downloadResources(driver, courseName, nameClass):
     checkResourceBtn = checkResourceBtn[0]
     checkResourceBtn.click()
     try:
-        downloadAllBtn = driver.find_element(
+        downloadAllBtn = driver.find_elements(
             By.XPATH, f"//*[contains(@class, '{checkDownloadAllSelector}')]"
         )
         # get the href of the download links
         if downloadAllBtn:
-            if not checkFolderExists(f"\\videos\\{courseName}\\resources"):
-                createFolder("\\videos\\" + courseName + "\\resources")
+            downloadAllBtn = downloadAllBtn[0]
+            path = "./videos/{}/resources/".format(courseName)
+            os.makedirs(path, exist_ok=True)
             link = downloadAllBtn.get_attribute("href")
             # get the download file name
             fileName = f"{nameClass}.zip"
@@ -108,6 +109,32 @@ def downloadResources(driver, courseName, nameClass):
                         path = "./videos/{}/resources/".format(courseName)
                         with open(f"{path}{fileName}", "wb") as f:
                             f.write(response.content)
+        else:
+            # get the download elements by href
+            download_elements = driver.find_elements(
+                By.XPATH,
+                "//a[contains(@href, 'https://static.platzi.com/media/public/uploads')]",
+            )
+            headers = {
+                "Referer": "https://platzi.com/",
+                "User-Agent": "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+            }
+            path = "./videos/{}/resources/".format(courseName)
+            os.makedirs(path, exist_ok=True)
+            for element in download_elements:
+                link = element.get_attribute("href")
+                # get the file name
+                fileName = f"{nameClass.split('.')[0]}. {element.text}"
+                # download the file
+                if link != "":
+                    if not checkFileExists(
+                        f"\\videos\\{courseName}\\resources\\{fileName}"
+                    ):
+                        response = requests.get(link, headers=headers)
+                        if response.status_code == 200:
+                            with open(f"{path}{fileName}", "wb") as f:
+                                f.write(response.content)
+
         return
     except:
         downloadAllBtn = None
@@ -341,7 +368,7 @@ def work():
         # pass the chrome options and desired capabilities as
         # parameters.
         service = Service(webdriver_path)
-        #!fix replace https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/ 
+        #!fix replace https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/
         #! with https://storage.googleapis.com/chrome-for-testing-public/ in undetected_chromedriver\patcher.py
         driver = uc.Chrome(
             service=service,
