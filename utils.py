@@ -1,5 +1,10 @@
 import subprocess, glob, os, sys
 
+headers = {
+    "Referer": "https://platzi.com/",
+    "User-Agent": "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+}
+
 
 def remove_word_from_file(directory_path, words):
     file_paths = glob.glob(directory_path + "/*.mhtml")
@@ -72,11 +77,19 @@ def createFolder(path):
 def checkIfExtesionExists(directory, extension):
     return any(file.endswith(extension) for file in os.listdir(directory))
 
+
+def is_folder_empty(folder_path):
+    return len(os.listdir(folder_path)) == 0
+
+
 def checkIfffmpegInstalled():
     try:
-        subprocess.run(["ffmpeg", "-version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(
+            ["ffmpeg", "-version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         return True
     except FileNotFoundError:
         return False
+
 
 # endregion

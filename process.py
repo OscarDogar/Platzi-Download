@@ -6,7 +6,7 @@ import os
 import math
 import re
 import sys
-from utils import checkFolderExists, checkFileExists
+from utils import checkFolderExists, checkFileExists, is_folder_empty, headers
 from downloadVideoInfo import getInfo
 
 
@@ -62,6 +62,7 @@ def checkDuration(process, command):
 
 
 def downloadSubs(subtitles, courseName):
+    subsPath = f"videos/{courseName}/Subs"
     if not checkFolderExists(f"\\videos\\{courseName}\\Subs"):
         subprocess.run(f"cd videos/{courseName} && mkdir Subs", shell=True)
     for key, value in subtitles.items():
@@ -69,8 +70,9 @@ def downloadSubs(subtitles, courseName):
             for sub in value:
                 name = f"{key}.{sub['language']}.vtt"
                 if not checkFileExists(f"\\videos\\{courseName}\\Subs\\{name}"):
+                    userAgent = headers["User-Agent"]
                     subprocess.run(
-                        f'cd videos/{courseName}/Subs && curl {sub["source"]} -o "{name}"',
+                        f'cd videos/{courseName}/Subs && curl -A "{userAgent}" {sub["source"]} -o "{name}"',
                         shell=True,
                     )
                     # convert to srt
@@ -85,6 +87,8 @@ def downloadSubs(subtitles, courseName):
                     subprocess.run(
                         f'cd videos/{courseName}/Subs && del "{name}"', shell=True
                     )
+    if is_folder_empty(subsPath):
+        os.rmdir(subsPath)
 
 
 # region Create and run commands

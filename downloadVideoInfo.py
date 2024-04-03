@@ -2,10 +2,10 @@ import subprocess
 import requests
 import re
 import time
-from utils import createFolder, checkIfExtesionExists, print_progress_bar
+from utils import createFolder, checkIfExtesionExists, print_progress_bar, headers
 
 
-def make_request_with_retries(url, headers, max_retries=3, retry_delay=1):
+def make_request_with_retries(url, max_retries=3, retry_delay=1):
     for retry in range(max_retries):
         try:
             response = requests.get(url, headers=headers)
@@ -47,10 +47,6 @@ def getInfo(url, courseName, className):
         elif checkHD2:
             positions = checkHD2.regs[0]
             newUrl = res.text[positions[1] + 1 : positions[1] + 1000]
-    headers = {
-        "Referer": "https://platzi.com/",
-        "User-Agent": "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-    }
     newRes = requests.get(newUrl, headers=headers)
     if newRes.status_code == 200:
         # get the URI
@@ -86,7 +82,7 @@ def getInfo(url, courseName, className):
         i = 0
         print(f"Started downloading {className}")
         for url in array:
-            resTs = make_request_with_retries(url, headers)
+            resTs = make_request_with_retries(url)
             # resTs = requests.get(url, headers=headers)
             if resTs == None:
                 break
