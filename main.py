@@ -28,6 +28,8 @@ from utils import (
     checkFileExists,
     colorize_text,
     checkIfffmpegInstalled,
+    is_folder_empty,
+    headers,
 )
 
 
@@ -91,10 +93,10 @@ def downloadResources(driver, courseName, nameClass):
         downloadAllBtn = driver.find_elements(
             By.XPATH, f"//*[contains(@class, '{checkDownloadAllSelector}')]"
         )
+        path = f"./videos/{courseName}/resources/"
         # get the href of the download links
         if downloadAllBtn:
             downloadAllBtn = downloadAllBtn[0]
-            path = "./videos/{}/resources/".format(courseName)
             os.makedirs(path, exist_ok=True)
             link = downloadAllBtn.get_attribute("href")
             # get the download file name
@@ -106,7 +108,6 @@ def downloadResources(driver, courseName, nameClass):
                 ):
                     response = requests.get(link)
                     if response.status_code == 200:
-                        path = "./videos/{}/resources/".format(courseName)
                         with open(f"{path}{fileName}", "wb") as f:
                             f.write(response.content)
         else:
@@ -115,11 +116,6 @@ def downloadResources(driver, courseName, nameClass):
                 By.XPATH,
                 "//a[contains(@href, 'https://static.platzi.com/media/public/uploads')]",
             )
-            headers = {
-                "Referer": "https://platzi.com/",
-                "User-Agent": "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-            }
-            path = "./videos/{}/resources/".format(courseName)
             os.makedirs(path, exist_ok=True)
             for element in download_elements:
                 link = element.get_attribute("href")
@@ -134,7 +130,8 @@ def downloadResources(driver, courseName, nameClass):
                         if response.status_code == 200:
                             with open(f"{path}{fileName}", "wb") as f:
                                 f.write(response.content)
-
+        if is_folder_empty(path):
+            os.rmdir(path)
         return
     except:
         downloadAllBtn = None
