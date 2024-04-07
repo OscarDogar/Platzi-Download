@@ -118,6 +118,9 @@ def downloadResources(driver, courseName, nameClass):
             )
             os.makedirs(path, exist_ok=True)
             for element in download_elements:
+                #Check if has download attribute
+                if not element.get_attribute("download"):
+                    continue
                 link = element.get_attribute("href")
                 # get the file name
                 fileName = f"{nameClass.split('.')[0]}. {element.text}"
