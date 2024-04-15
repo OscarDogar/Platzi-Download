@@ -78,22 +78,29 @@ Este sería el resultado dentro de la carpeta *Taller de Inglés Básico sobre E
 
 ## ➕Additional
 
-[Funciona en la interfaz anterior de platzi] Para ver los comentarios de las clases sin necesidad de iniciar sesion. Se puede utilizar [uBlock Origin](https://github.com/gorhill/uBlock) con los siguientes filtros:
-```
-platzi.com##.CommentsOverlay-note:remove()
-platzi.com##.CommentsOverlay-note
-platzi.com##.CommentsOverlay-note-text
-platzi.com##.CommentsOverlay
-platzi.com##div.InfinityScrollLayout:has-text(Regístrate)
-```
-Por ejemplo, si intentas ingresar con este link: *https://platzi.com/new-home/clases/6273-intro-contenido/67112-como-es-la-vida-de-una-creadora-de-contenido/* este te redirecciona al login.
+> [!TIP]
+> Si deseas ver los comentarios de las clases deberás iniciar sesión pero puede ser con una cuanta sin suscripción. Puedes utilizar la extensión [Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) con el siguiente script:
 
-Pero si se elimina la parte del *new-home*: *https://platzi.com/clases/6273-intro-contenido/67112-como-es-la-vida-de-una-creadora-de-contenido/* este link redirecciona a la antigua página en la cual los comentarios se ven de la siguiente manera:
+### [View Platzi Comments](https://gist.githubusercontent.com/OscarDogar/717448f4db972aa01b4cf8b88baab4e2/raw/1641227fb3cd2e104002a9e50353648efd7ff250/ViewPlatziComments.js)
 
-Como se puede ver, se alcanzan a leer los primeros comentarios de la parte de arriba, pero mientras más se va bajando menos se podrán ver los comentarios [Imagen izquierda]. Ya una vez con los filtros se podrán ver todos los comentarios sin tener que iniciar sesión [Imagen derecha].
 
-<img width="400" src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/ab3d7e99-3787-41a7-90de-855a77b92ef3"/>
-<img width="400" src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/244386a3-2f10-49ac-9700-e252f95023fa"/>
+- Para agregar el script a Tampermonkey simplemente es ir a las configuraciones, luego a utilities y despues agregar la url en la parte de abajo.
+
+   ![image](https://github.com/OscarDogar/Platzi-Download/assets/60854050/9a6d2d7b-3b00-4632-b6c8-25f57dfd8a7d)
+
+- Luego aparecerá otra ventana para instalar el script en Tampermonkey. Al final en la pestaña de installed userscripts deberá aparecer el script: 
+
+   ![image](https://github.com/OscarDogar/Platzi-Download/assets/60854050/c3496eaf-dc8f-41a7-8f15-3cb96bf1d801)
+
+
+## 💡Ejemplo 
+
+Como se puede ver en esta [clase](https://platzi.com/new-home/clases/2069-negocios-data-science/33434-como-crear-empresas-y-culturas-data-driven/), se alcanzan a leer los primeros comentarios de la parte de arriba, pero mientras más se va bajando menos se podrán ver los comentarios [Imagen izquierda]. Ya una vez con el script se podrán ver todos los comentarios sin necesidad de tener una cuenta de pago [Imagen derecha].
+
+
+
+<img width="400" src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/c42d199e-9230-4334-aaf1-10a0d809ef7c"/>
+<img width="400" src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/78322f45-5f97-4f7b-b4c7-96d2155aaefc"/>
 
 
 
