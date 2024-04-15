@@ -2,22 +2,21 @@ import subprocess
 import requests
 import re
 import time
-from utils import createFolder, checkIfExtesionExists, print_progress_bar, headers
+from utils import createFolder, checkIfExtesionExists, print_progress_bar
+from customRequest import request_with_random_user_agent
 
 
 def make_request_with_retries(url, max_retries=3, retry_delay=1):
     for retry in range(max_retries):
         try:
-            response = requests.get(url, headers=headers)
+            response = request_with_random_user_agent(url)
             if response.status_code == 200:
                 return response  # Return the response if successful
         except requests.exceptions.RequestException as e:
             print(f"\nRequest failed (retry {retry + 1}/{max_retries})")
-
         # Wait before the next retry (using a simple backoff strategy)
         time.sleep(retry_delay)
         retry_delay *= 2  # Double the waiting time for the next retry
-
     # All retries failed, handle the failure here
     print("All retries failed.")
     return None
@@ -47,18 +46,16 @@ def getInfo(url, courseName, className):
         elif checkHD2:
             positions = checkHD2.regs[0]
             newUrl = res.text[positions[1] + 1 : positions[1] + 1000]
-    newRes = requests.get(newUrl, headers=headers)
+    newRes = request_with_random_user_agent(newUrl)
     if newRes.status_code == 200:
         # get the URI
         findUri = re.search(r'URI="(.*)"', newRes.text)
         resUri = None
         if findUri:
             uriUrl = findUri.group(1)
-            resUri = requests.get(uriUrl, headers=headers)
-
+            resUri = request_with_random_user_agent(uriUrl)
         matchesTs = re.findall(r"/([^/]+\.ts)", newRes.text)
         matchesHttp = re.findall(r"https://.*", newRes.text)
-
         i = 0
         infom3u8 = newRes.text
         for match in matchesHttp:
@@ -120,4 +117,7 @@ def getInfo(url, courseName, className):
             removeKey = subprocess.check_output(
                 f"cd {folderPath} && del *.key", shell=True
             )
+    else:
+        print(f"error getting info for {className}")
+        errorGettingClasses = className
     return errorGettingClasses

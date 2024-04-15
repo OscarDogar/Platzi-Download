@@ -29,8 +29,8 @@ from utils import (
     colorize_text,
     checkIfffmpegInstalled,
     is_folder_empty,
-    headers,
 )
+from customRequest import request_with_random_user_agent
 
 
 # region Variables and selectors
@@ -129,7 +129,7 @@ def downloadResources(driver, courseName, nameClass):
                     if not checkFileExists(
                         f"\\videos\\{courseName}\\resources\\{fileName}"
                     ):
-                        response = requests.get(link, headers=headers)
+                        response = request_with_random_user_agent(link)
                         if response.status_code == 200:
                             with open(f"{path}{fileName}", "wb") as f:
                                 f.write(response.content)
