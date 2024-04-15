@@ -1,8 +1,20 @@
-import subprocess, glob, os, sys
+import subprocess, glob, os, sys, random
+from browser import browsers_user_agents
+
+
+def get_random_user_agent():
+    """
+    Returns a random user agent string from the list of available user agents.
+
+    :return: A random user agent string.
+    """
+    random_number = random.randint(0, len(browsers_user_agents) - 1)
+    return browsers_user_agents[random_number]
+
 
 headers = {
     "Referer": "https://platzi.com/",
-    "User-Agent": "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+    "User-Agent": get_random_user_agent(),
 }
 
 
