@@ -38,11 +38,11 @@ Si lo deseas puedes simplemente descargar el ejecutable del último release el c
 
 5. Una vez completada la verificación de los videos, el programa empieza a descargar los videos encontrados 1 por 1.
 
-6. Los pasos en que se realiza la descarga es en el siguiente orden:
-   - **Descarga de lecturas**: El programa descarga las lecturas al momento de cargar y las guarda en la cartpeta lectures.
+6. Los pasos en que se realiza la descarga son en el siguiente orden:
+   - **Descarga de lecturas**: El programa descarga las lecturas al momento de cargar y las guarda en la carpeta lectures.
    - **Descarga de recursos**: El programa procede a descargar los recursos asociados a los videos, asegurando que todos los materiales auxiliares estén disponibles para el usuario.
    - **Descarga de subtítulos**: Los subtítulos de los videos son descargados, garantizando su disponibilidad para su posterior uso, estos se encuentran dentro de la carpeta del curso, en una carpeta llamada *Subs*.
-   - **Descarga de videos**: El programa comienza a descargar los videos y los descarga dentro de la carpeta de videos y dentro de otra carpeta con el nombre del curso.
+   - **Descarga de videos**: El programa comienza a descargar los videos y los descargara dentro de la carpeta de videos y dentro de otra carpeta con el nombre del curso.
 
 7. Con todas las descargas completadas, el proceso concluye y los videos, subtítulos y recursos estarán disponibles en una carpeta con el nombre de la clase dentro de la carpeta videos.
 
@@ -54,7 +54,7 @@ Si lo deseas puedes simplemente descargar el ejecutable del último release el c
 * not found en los subtítulos, esto es debido a que no cumplió con algunas validaciones para poderlo descargar.
 * All retries failed. es cuando al momento de descargar un video no se pudo descargar algunas de las partes, por lo que se salta este video y sigue al siguiente.
 * Si al momento de estar buscando los videos se le da click a otra parte que redireccione a una página distinta, Genera un problema.
-* En algunos casos, debido a que el servidor puede presentar problemas no se podra descargar el video por lo que se salta y se pasa al siguiente video. 
+* En algunos casos, debido a que el servidor puede presentar problemas no se podrá descargar el video por lo que se salta y se pasa al siguiente video. 
 
 ## 💕 Sponsor 
 
@@ -79,12 +79,12 @@ Este sería el resultado dentro de la carpeta *Taller de Inglés Básico sobre E
 ## ➕Additional
 
 > [!TIP]
-> Si deseas ver los comentarios de las clases deberás iniciar sesión pero puede ser con una cuanta sin suscripción. Puedes utilizar la extensión [Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) con el siguiente script:
+> Si deseas ver los comentarios de las clases deberás iniciar sesión, pero puede ser con una cuenta sin suscripción. Puedes utilizar la extensión [Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) con el siguiente script:
 
 ### [View Platzi Comments](https://gist.githubusercontent.com/OscarDogar/717448f4db972aa01b4cf8b88baab4e2/raw/1641227fb3cd2e104002a9e50353648efd7ff250/ViewPlatziComments.js)
 
 
-- Para agregar el script a Tampermonkey simplemente es ir a las configuraciones, luego a utilities y despues agregar la url en la parte de abajo.
+- Para agregar el script a Tampermonkey simplemente es ir a las configuraciones, luego a utilities y después agregar la url en la parte de abajo.
 
    ![image](https://github.com/OscarDogar/Platzi-Download/assets/60854050/9a6d2d7b-3b00-4632-b6c8-25f57dfd8a7d)
 
