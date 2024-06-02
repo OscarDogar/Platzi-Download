@@ -47,18 +47,19 @@ checkQuizSelector = "StartQuizOverview-buttons"
 contentSelector = "styles_IFrame"
 checkExamSelector = "StartExamOverview"
 
-courseInfoLinkSelector = "MaterialHeading-course"
+publishedDateSelector = "//*[contains(@class, 'MaterialHeading-published')]"
+courseInfoLinkSelector = "MaterialDesktopHeading-course"
 courseInfoSelector = "Hero-base"
 promorBannerSelector = "PromoBanner-content"
-courseNameSelector = "course_name"
+courseNameSelector = "BadgeWithText_BadgeWithText"
 videoDivSelector = "video-js"
 resourceBtnSelector = "resources_tab"
 checkAvailableResourcesSelector = "Archivos de la clase"
 
 skipQuizBtnSelector = "StartQuizOverview-btn--skip"
-classNameSelector = "MaterialHeading-title"
+classNameSelector = '//*[@data-qa="class_title"]'
 classNumberSelector = "MaterialHeading-tag"
-nextClassBtnSelector = "Button--secondary"
+nextClassBtnSelector = '//*[@data-qa="next_class_button"]'
 
 checkDownloadableResourcesSelector = "FilesTree-download"
 checkDownloadableFileSelector = "fa-download"
@@ -118,7 +119,7 @@ def downloadResources(driver, courseName, nameClass):
             )
             os.makedirs(path, exist_ok=True)
             for element in download_elements:
-                #Check if has download attribute
+                # Check if has download attribute
                 if not element.get_attribute("download"):
                     continue
                 link = element.get_attribute("href")
@@ -206,33 +207,31 @@ def main():
 
 
 def getClassName(driver):
-    # className = driver.find_element(By.XPATH, f"//*[contains(@class, '{classNameSelector}')]").text
-    className = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located(
-            (By.XPATH, f"//*[contains(@class, '{classNameSelector}')]")
-        )
-    )
+    className = driver.find_elements(By.XPATH, classNameSelector)[1]
     result = re.sub(r"Clase\s\d.*$", "", className.text)
     return re.sub(r"[^\w\s]", "", result)
 
 
 def getClassNumber(driver):
-    classNumber = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located(
-            (By.XPATH, f"//*[contains(@class, '{classNumberSelector}')]")
-        )
-    )
-
-    # classNumber = driver.find_element(By.XPATH, f"//*[contains(@class, '{classNumberSelector}')]").text
-    number = [int(num) for num in re.findall(r"\d+", classNumber.text)]
-    return number
+    html_content = driver.page_source
+    position = html_content.find(classNumberSelector)
+    if position != -1:
+        rest_of_text = html_content[position + len(classNumberSelector) :]
+        numbersPattern = r"\d+\s*/\s*\d+"
+        match = re.search(numbersPattern, rest_of_text)
+        if match:
+            number = match.group().split("/")
+            return [substring.strip() for substring in number]
+        else:
+            # throw error
+            raise Exception("Could not find the class number")
+    else:
+        print(f"Class number was not found.")
 
 
 def nextPage(driver):
     btnNext = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, f"//*[contains(@class, '{nextClassBtnSelector}')]")
-        )
+        EC.element_to_be_clickable((By.XPATH, nextClassBtnSelector))
     )
     # check if the button is disabled
     if btnNext.is_enabled():
@@ -293,7 +292,7 @@ def getVideoAndSubInfo(driver):
     return video_info, subs_info
 
 
-def getCourseImage(driver, link, courseName):
+def getCourseImage(driver, link, courseName, published):
     driver.get(link)
     time.sleep(0.5)
     try:
@@ -307,7 +306,7 @@ def getCourseImage(driver, link, courseName):
     try:
         # save the course link
         with open(f"./videos/{courseName}/Course Link.txt", "w") as f:
-            f.write(link)
+            f.write(link + "\n" + published)
         courseInfo = driver.find_element(By.CLASS_NAME, courseInfoSelector)
         driver.execute_script("arguments[0].scrollIntoView();", courseInfo)
 
@@ -377,6 +376,7 @@ def work():
         )
         driver.get("https://platzi.com/login/")
         load_dotenv()
+        time.sleep(0.5)
         emailInput = driver.find_element(By.ID, emailSelector)
         emailInput.send_keys(os.environ.get("EMAIL"))
         time.sleep(0.5)
@@ -421,9 +421,10 @@ def work():
         content = driver.find_elements(
             By.XPATH, f"//*[contains(@class, '{contentSelector}')]"
         )
-        checkCourseName = driver.find_element(
-            By.CSS_SELECTOR, f"[data-qa='{courseNameSelector}']"
-        )
+        checkCourseName = driver.find_elements(
+            By.XPATH, f"//*[contains(@class, '{courseNameSelector}')]"
+        )[1]
+        published = driver.find_element(By.XPATH, publishedDateSelector).text
         if checkCourseName:
             courseName = checkCourseName.text
             courseName = re.sub(r"[^\w\s]", "", courseName)
@@ -436,7 +437,7 @@ def work():
             if not checkFileExists(
                 f"\\videos\\{courseName}\\folder.png"
             ) and not checkFileExists(f"\\videos\\{courseName}\\folder.jpg"):
-                getCourseImage(driver, courseLink, courseName)
+                getCourseImage(driver, courseLink, courseName, published)
                 driver.get(startUrl)
         if len(quiz) == 0 and len(lecture) == 0 and len(content) == 0:
             videoPlayer = WebDriverWait(driver, 10).until(
