@@ -43,7 +43,7 @@ submitLoginBtnSelector = '//*[@id="login-v2"]/div/div/div/div[3]/form/button'
 checkCaptchaSelector = "MainLayout"
 checkVideoSelector = "VideoPlayer"
 checkLectureSelector = "styles_Lecture"
-checkQuizSelector = "StartQuizOverview-buttons"
+checkQuizSelector = "StartQuizOverview"
 contentSelector = "styles_IFrame"
 checkExamSelector = "StartExamOverview"
 
@@ -520,6 +520,9 @@ def work():
                 if len(quiz) != 0:
                     jumpNext = driver.find_element(By.CLASS_NAME, skipQuizBtnSelector)
                     jumpNext.click()
+                    popup = driver.find_elements(By.XPATH, f"//*[contains(@class, 'Button-module_Button--secondary_')]")
+                    if popup:
+                        popup[0].click()
                 else:
                     content = driver.find_elements(
                         By.XPATH, f"//*[contains(@class, '{contentSelector}')]"
@@ -607,11 +610,10 @@ def work():
             )
         else:
             print(e)
-    finally:
-        input("Press enter to exit")
 
 
 if __name__ == "__main__":
     # Pyinstaller fix
     multiprocessing.freeze_support()
     main()
+    input("Press enter to exit")
