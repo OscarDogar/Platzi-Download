@@ -1,0 +1,50 @@
+services:
+  Platzi-Download:
+    # build: .
+    container_name: Platzi-Download
+    image: ghcr.io/oscardogar/Platzi-Download:latest
+    user: "${UID:-1000}:${GID:-1000}"
+    # Mount output folder to your machine (IMPORTANT)
+    volumes:
+      - ${HOME}/Videos/Platzi:/app/Videos
+    env_file:
+      - .env
+    # load environment variables
+    # environment:
+    #   # Required
+    #   COOKIE: "s=your_cookie_here"
+
+    #   # Required
+    #   # Multiple courses supported (comma-separated)
+    #   COURSE_URL: "https://platzi.com/cursos/course1/,https://platzi.com/cursos/course2/"
+
+    #   # Optional (defaults shown below)
+    #   VIDEO_DOWNLOAD_MAX_PARALLEL: "1"
+    #   VIDEO_DOWNLOAD_BATCH_SIZE: "30"
+    #   VIDEO_DOWNLOAD_COOLDOWN: "10"
+    #   VIDEO_DOWNLOAD_START_DELAY: "0.5"
+    #   VIDEO_DOWNLOAD_LIMIT_RATE: "100M"
+
+    #   # Optional (defaults shown below)
+    #   VIDEO_DOWNLOAD_CONCURRENT_FRAGMENTS: "3"
+    #   VIDEO_DOWNLOAD_FRAGMENT_RETRIES: "20"
+    #   VIDEO_DOWNLOAD_RETRIES: "20"
+
+    #   # Optional (defaults shown below)
+    #   VIDEO_DOWNLOAD_RETRY_SLEEP: "exp=1:20"
+    #   VIDEO_DOWNLOAD_SLEEP_REQUESTS: "0"
+
+    #   # Optional
+    #   KEEP_TMP_FILES: "N"
+
+    #   # Optional
+    #   DOWNLOAD_RESOURCES: "Y"
+
+    #   # Optional
+    #   SHOW_DOWNLOAD_LOGS: "N"
+
+    #   # Optional
+    #   LECTURES_FORMAT_DOWNLOAD: "pdf"
+
+    #   # Optional
+    #   COURSE_NAME_DATE_FORMAT: "%Y"
