@@ -1,115 +1,418 @@
 <div align="center">
-  <img src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/5a57dd93-1138-40d1-9231-c3c029c98bb5"/>
-  <h1>Platzi-Download</h1>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:0f172a,100:1e293b&text=Platzi-Download&fontColor=ffffff&fontSize=55&animation=fadeIn&fontAlignY=40&desc=Platzi%20Course%20Downloader&descAlignY=60" />
+
+<br/>
+
+<img src="https://img.shields.io/badge/Python-3.12+-blue?style=for-the-badge&logo=python" />
+<img src="https://img.shields.io/github/v/release/OscarDogar/Platzi-Download?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Status-Active-22c55e?style=for-the-badge" />
+<img src="https://img.shields.io/github/downloads/OscarDogar/Platzi-Download/total?style=for-the-badge" />
+<img src="https://img.shields.io/github/last-commit/OscarDogar/Platzi-Download?style=for-the-badge" />
+<img src="https://img.shields.io/github/repo-size/OscarDogar/Platzi-Download?style=for-the-badge" />
+<!--<img src="https://img.shields.io/badge/Automation-Enabled-facc15?style=for-the-badge" />-->
+<img src="https://img.shields.io/github/stars/OscarDogar/Platzi-Download?style=for-the-badge" />
+<img src="https://img.shields.io/github/license/OscarDogar/Platzi-Download?style=for-the-badge" />
+<img src="https://img.shields.io/badge/GHCR-Container-blue?style=for-the-badge&logo=docker" />
+<img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
+
+<a href="https://github.com/sponsors/OscarDogar">
+  <img src="https://img.shields.io/badge/⭐%20Sponsor%20This%20Project-ff4d6d?style=for-the-badge&logo=githubsponsors&logoColor=white&labelColor=0f172a" height="45"/>
+</a>
+
 </div>
 
-Permite descargar videos de Platzi muchos más rápido. Permite descargar tanto los videos, las lecturas, los subtítulos (si están disponibles) y los recursos de cada una de las clases. 
+# 📌 Overview
 
-## 📄Requirements 
-- Es **NECESARIO** tener una cuenta de suscripción a Platzi.
-- Tener instalado FFmpeg el cual puedes descargar en [https://ffmpeg.org/](https://ffmpeg.org/)
-- Tener Google Chrome instalado.
-- Descargar el webdriver de selenium con la misma versión de chrome instalada (el cual puedes descargar [aquí](https://chromedriver.chromium.org/downloads)) y colocarlo en la ruta inicial del disco *C*, es decir, *"C:/chromedriver.exe"*
-- Instalar requirements.txt
-- Cambiar en el archivo .env que se creó al correr el programa por primera vez las variables de entorno que se necesitan:
-  1. *EMAIL* = "tuemail@email.com"
-  2. *PWD* = "tucontraseña"
-  3. *WORDS_TO_REMOVE*(opcional) = word1, word2, word3 (son algunas palabras que se eliminan al momento de descargar una lectura).
- 
-## 📥Installation
+**Downloader** is a Python automation tool designed to download **complete Platzi courses** in a structured and scalable way.
 
-Si lo deseas puedes simplemente descargar el ejecutable del último release el cual puedes encontrar [aquí](https://github.com/OscarDogar/Platzi-Download/releases). 
+It handles everything from course parsing to video downloads and optional resources extraction.
 
-## 📋Steps
+# ⚙️ What It Does
 
-0. Antes que todo lo primero que se deba hacer es cambiar las variables de entorno en el archivo .env que se genera al momento de ejecutar el programa
+The pipeline automatically processes each course URL:
 
-1. Al iniciar el proceso de descarga, se presenta al usuario la opción de elegir entre dos modalidades: 
-   - Descargar un solo video (opción 1).
-   - Descargar todos los videos siguientes (opción 2).
+- 🔐 Validates session cookie and course access
+- 🔎 Extracts lesson links and metadata
+- 🌐 Fetches lesson pages asynchronously (`aiohttp`)
+- 🧠 Parses video URLs and lecture metadata
+- 📎 Downloads course resources (optional)
+- 🎥 Downloads videos using `yt-dlp`
+- 🧹 Cleans temporary files (optional)
+- 📊 Generates structured course output files
 
-2. Opciones.
-   - Si el usuario elige la opción 1, se procede a descargar únicamente el video correspondiente a esa URL.
-   - Si el usuario selecciona la opción 2, se le solicita ingresar la URL del video desde donde desea comenzar la descarga.
+# ⚡ Performance Improvements & Usage Updates
 
-3. Espere hasta que aparezca el mensaje ```Finding videos...```
+## 🚀 Faster & More Stable
 
-4. Después, el proceso avanza a la siguiente etapa. El programa navega a la URL proporcionada anteriormente para comenzar la verificación de la disponibilidad de descarga de los videos. Este proceso también se aplica a los subtítulos, recursos y lecturas.
+This new version is significantly:
 
-5. Una vez completada la verificación de los videos, el programa empieza a descargar los videos encontrados 1 por 1.
+- ⚡ **Faster** due to removal of browser automation (no Selenium/ChromeDriver)
+- 🧠 **More stable** using direct HTTP/API-based requests
+- 🛡️ **Less error-prone**, with improved retry and parsing logic
+- 📦 Containerized for the default downloader workflow; optional Playwright/Chromium fallback requires additional browser setup
 
-6. Los pasos en que se realiza la descarga son en el siguiente orden:
-   - **Descarga de lecturas**: El programa descarga las lecturas al momento de cargar y las guarda en la carpeta lectures.
-   - **Descarga de recursos**: El programa procede a descargar los recursos asociados a los videos, asegurando que todos los materiales auxiliares estén disponibles para el usuario.
-   - **Descarga de subtítulos**: Los subtítulos de los videos son descargados, garantizando su disponibilidad para su posterior uso, estos se encuentran dentro de la carpeta del curso, en una carpeta llamada *Subs*.
-   - **Descarga de videos**: El programa comienza a descargar los videos y los descargara dentro de la carpeta de videos y dentro de otra carpeta con el nombre del curso.
+## 📚 Multi-Course Support
 
-7. Con todas las descargas completadas, el proceso concluye y los videos, subtítulos y recursos estarán disponibles en una carpeta con el nombre de la clase dentro de la carpeta videos.
+You can now download **one or multiple courses at the same time** using the `COURSE_URL` variable.
 
-## ⚠️Possible failures
+### 📌 Example
 
-* Si hay caídas o desconexiones de internet es posible que se pierda la conexión y no siga descargando o pasando los videos.
-* Si se queda quieto y no avanza de una clase.
-* Si después de un tiempo no se completa el captcha falla.
-* not found en los subtítulos, esto es debido a que no cumplió con algunas validaciones para poderlo descargar.
-* All retries failed. es cuando al momento de descargar un video no se pudo descargar algunas de las partes, por lo que se salta este video y sigue al siguiente.
-* Si al momento de estar buscando los videos se le da click a otra parte que redireccione a una página distinta, Genera un problema.
-* En algunos casos, debido a que el servidor puede presentar problemas no se podrá descargar el video por lo que se salta y se pasa al siguiente video. 
+```env
+COURSE_URL=https://course1,https://course2,https://course3
+```
 
-## 💕 Sponsor 
+Just separate each course URL with a comma.
 
-- Si este repositorio te ha sido útil o te ha brindado ayuda, te agradecería mucho si pudieras considerar hacer clic en el botón de sponsor. Tu apoyo es lo que impulsa la mejora continua y la creación de nuevos proyectos similares a este. Juntos, podemos seguir haciendo grandes cosas. ¡Gracias por ser parte de esta comunidad!
+The downloader will process them sequentially in a single execution.
 
-[Sponsor me <img src="https://github-production-user-asset-6210df.s3.amazonaws.com/60854050/263421335-c7468ed6-7853-42c6-9de9-05be51da1ca2.png" width="20"/>](https://github.com/sponsors/OscarDogar)
+## 🔁 Resume & Retry Behavior
 
-## ⭐Star this project 
-Recuerda que también puedes ayudarme dándole clic a la estrella en este repositorio en la parte superior [<img width="30" src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/833aa10d-de1e-472a-8123-3dc1046aa35b"/>](https://github.com/OscarDogar/Platzi-Download/) 
+If any video fails to download:
 
+- ❌ No need for manual recovery
+- 🔄 Simply **run the program again**
+- ✅ The downloader will automatically retry missing or failed videos
 
-## ✅Result
+This makes the system resilient to network issues or temporary failures.
 
-Una vez completado todo el proceso quedarán los cursos dentro de la carpeta llamada "videos" y dentro estarán otras carpetas 
-con el nombre de cada uno de los cursos y dentro de esas carpetas estarán los videos, una carpeta de lectures, una carpeta con los subtítulos y otra con los recursos.
+## 💡 Summary
 
-Este sería el resultado dentro de la carpeta *Taller de Inglés Básico sobre Elementos de Trabajo*: 
+- ⚡ Faster downloads
+- 🧩 Fewer errors and better stability
+- 📚 Multi-course download support
+- 🔁 Easy retry system (just rerun the script)
 
-![image](https://github.com/OscarDogar/Platzi-Download/assets/60854050/d2aa50e8-a7c3-4bb6-8833-7b258e96181c)
+# 🧱 Architecture
 
+```txt
+Course URL
+   ↓
+Extract Links
+   ↓
+Fetch HTML (async)
+   ↓
+Parse Video Metadata
+   ↓
+Generate videos.json
+   ↓
+Download Videos (yt-dlp)
+   ↓
+Optional Resources + Cleanup
+```
 
-## ➕Additional
+# 📁 Project Structure
 
-> [!TIP]
-> Si deseas ver los comentarios de las clases deberás iniciar sesión, pero puede ser con una cuenta sin suscripción. Puedes utilizar la extensión [Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) con el siguiente script:
+```
+src/
+ ├── main.py                 → Entry point
+ ├── config.py               → Environment & validation
+ ├── extractCourseLinks.py   → Course parsing
+ ├── openLinks.py            → Async HTML fetching
+ ├── getVideosLink.py        → Video extraction logic
+ ├── downloadVideos.py       → yt-dlp downloader
+ ├── downloadResourses.py    → Course resources
+ ├── convertHTML2MD.py       → HTML → Markdown/PDF
+ ├── convertMD2PDF.py        → Markdown → PDF
+ ├── validateHtml.py         → Page validation
+ ├── getToken.py             → Auth token handler
+ ├── utils.py                → Shared utilities
+```
 
-### [View Platzi Comments](https://gist.githubusercontent.com/OscarDogar/717448f4db972aa01b4cf8b88baab4e2/raw/1641227fb3cd2e104002a9e50353648efd7ff250/ViewPlatziComments.js)
+# 📦 Requirements
 
+- Python **3.12+**
+- Valid **Platzi session cookie**
+- Course URL access
+- `ffmpeg`
+- Chromium (Playwright fallback)
 
-- Para agregar el script a Tampermonkey simplemente es ir a las configuraciones, luego a utilities y después agregar la url en la parte de abajo.
+```bash
+pip install -r requirements.txt
+```
 
-   ![image](https://github.com/OscarDogar/Platzi-Download/assets/60854050/9a6d2d7b-3b00-4632-b6c8-25f57dfd8a7d)
+# 🔐 How to Get Your Cookie (Required Setup)
 
-- Luego aparecerá otra ventana para instalar el script en Tampermonkey. Al final en la pestaña de installed userscripts deberá aparecer el script: 
+This project requires a valid **Platzi session cookie** to access course content.
 
-   ![image](https://github.com/OscarDogar/Platzi-Download/assets/60854050/c3496eaf-dc8f-41a7-8f15-3cb96bf1d801)
+## 📍 Where to Find It
 
+You can extract it using your browser’s **Developer Tools**.
 
-## 💡Ejemplo 
+### 🧭 Steps (Chrome / Edge / Firefox)
 
-Como se puede ver en esta [clase](https://platzi.com/new-home/clases/2069-negocios-data-science/33434-como-crear-empresas-y-culturas-data-driven/), se alcanzan a leer los primeros comentarios de la parte de arriba, pero mientras más se va bajando menos se podrán ver los comentarios [Imagen izquierda]. Ya una vez con el script se podrán ver todos los comentarios sin necesidad de tener una cuenta de pago [Imagen derecha].
+1. Go to 👉 https://platzi.com
+2. Log in with your account
+3. Open Developer Tools:
+   - Windows/Linux: `F12` or `Ctrl + Shift + I`
+   - Mac: `Cmd + Option + I`
+4. Go to the **Application** tab (or **Storage** in Firefox)
+5. On the left panel, open:
+   ```
+   Cookies → https://platzi.com
+   ```
+6. Look for the cookie named:
 
+```txt
+s
+```
 
+7. Copy the value of the `s` cookie
 
-<img width="400" src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/c42d199e-9230-4334-aaf1-10a0d809ef7c"/>
-<img width="400" src ="https://github.com/OscarDogar/Platzi-Download/assets/60854050/78322f45-5f97-4f7b-b4c7-96d2155aaefc"/>
+## ⚙️ Example `.env`
 
+```env
+COOKIE=your_cookie_value_here
+```
 
+## ⚠️ Important Notes
 
+- 🔒 This cookie is **personal and session-based**
+- ⏳ It may expire after logout or time
+- 🚫 Do NOT share it publicly
+- 🔄 If downloads fail, refresh your login and update the cookie
 
+## 💡 Tip
 
+If you are logged out frequently, just re-copy the `s` cookie from DevTools and update your `.env` file.
 
+# ⚙️ Configuration
 
+All configuration is handled via `.env`.
 
+| Variable                            | Required | Default    | Description                                  |
+| ----------------------------------- | -------- | ---------- | -------------------------------------------- |
+| COOKIE                              | ✅ Yes   | -          | Platzi session cookie                        |
+| COURSE_URL                          | ✅ Yes   | -          | Course URLs (comma-separated)                |
+| VIDEO_DOWNLOAD_MAX_PARALLEL         | Optional | `1`        | Maximum simultaneous video downloads         |
+| VIDEO_DOWNLOAD_BATCH_SIZE           | Optional | `30`       | Number of downloads before cooldown          |
+| VIDEO_DOWNLOAD_COOLDOWN             | Optional | `10`       | Delay between download batches (seconds)     |
+| VIDEO_DOWNLOAD_START_DELAY          | Optional | `0.5`      | Delay before each download starts            |
+| VIDEO_DOWNLOAD_LIMIT_RATE           | Optional | `100M`     | yt-dlp download rate limit                   |
+| VIDEO_DOWNLOAD_CONCURRENT_FRAGMENTS | Optional | `3`        | Concurrent fragments downloaded by yt-dlp    |
+| VIDEO_DOWNLOAD_FRAGMENT_RETRIES     | Optional | `20`       | Retry attempts per fragment                  |
+| VIDEO_DOWNLOAD_RETRIES              | Optional | `20`       | Total retry attempts per video               |
+| VIDEO_DOWNLOAD_RETRY_SLEEP          | Optional | `exp=1:20` | Retry backoff strategy                       |
+| VIDEO_DOWNLOAD_SLEEP_REQUESTS       | Optional | `0`        | Delay between yt-dlp requests                |
+| KEEP_TMP_FILES                      | Optional | `N`        | Keep temporary files (`Y/N`)                 |
+| DOWNLOAD_RESOURCES                  | Optional | `Y`        | Download additional course resources (`Y/N`) |
+| SHOW_DOWNLOAD_LOGS                  | Optional | `N`        | Enable verbose yt-dlp logs (`Y/N`)           |
+| LECTURES_FORMAT_DOWNLOAD            | Optional | `pdf`      | Lecture export format (`md` or `pdf`)        |
+| COURSE_NAME_DATE_FORMAT             | Optional | `%Y`       | Folder naming date format                    |
 
+> 💡 Feel free to adjust the download configuration values based on your system performance, internet connection, or preferred behavior.
+>
+> Lower values may improve stability on slower systems, while higher values can increase download speed on more powerful machines or faster networks.
+>
+> You can experiment with:
+>
+> - ⚡ Parallel downloads
+> - 📦 Batch sizes
+> - 🔁 Retry limits
+> - 🚦 Rate limits
+> - ⏱️ Cooldowns and delays
+>
+> to achieve the best balance between speed, stability, and reliability for your environment.
+>
+> ⚠️ Using too many parallel downloads or extremely high download speeds may cause videos to fail, timeout, or trigger temporary rate limits from the platform.
+>
+> If you experience failed downloads, reduce:
+>
+> - `VIDEO_DOWNLOAD_MAX_PARALLEL`
+> - `VIDEO_DOWNLOAD_LIMIT_RATE`
+> - `VIDEO_DOWNLOAD_CONCURRENT_FRAGMENTS`
+>
+> for more stable results.
 
+## 📄 Example `.env`
 
+```env
+COOKIE=your_cookie_here
 
+COURSE_URL=https://platzi.com/cursos/example-course/
+
+VIDEO_DOWNLOAD_MAX_PARALLEL=1
+VIDEO_DOWNLOAD_BATCH_SIZE=30
+VIDEO_DOWNLOAD_COOLDOWN=10
+VIDEO_DOWNLOAD_START_DELAY=0.5
+VIDEO_DOWNLOAD_LIMIT_RATE=100M
+VIDEO_DOWNLOAD_CONCURRENT_FRAGMENTS=3
+VIDEO_DOWNLOAD_FRAGMENT_RETRIES=20
+VIDEO_DOWNLOAD_RETRIES=20
+VIDEO_DOWNLOAD_RETRY_SLEEP=exp=1:20
+VIDEO_DOWNLOAD_SLEEP_REQUESTS=0
+
+KEEP_TMP_FILES=N
+DOWNLOAD_RESOURCES=Y
+SHOW_DOWNLOAD_LOGS=N
+
+LECTURES_FORMAT_DOWNLOAD=pdf
+COURSE_NAME_DATE_FORMAT=%Y
+```
+
+# 🐳 Docker Usage
+
+## Compose
+
+```yaml
+services:
+  Platzi-Download:
+    container_name: Platzi-Download
+    image: ghcr.io/oscardogar/Platzi-Download:latest
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - /your/path/:/app/Videos
+    env_file:
+      - .env
+```
+
+You can configure everything directly inside `docker-compose.yml` without using a separate `.env` file.
+
+```yaml
+services:
+  Platzi-Download:
+    container_name: Platzi-Download
+    image: ghcr.io/oscardogar/Platzi-Download:latest
+    user: "${UID:-1000}:${GID:-1000}"
+
+    volumes:
+      - /your/path/:/app/Videos
+
+    environment:
+      # Required
+      COOKIE: "your_cookie_here"
+
+      # Required
+      # Multiple courses supported (comma-separated)
+      COURSE_URL: "https://platzi.com/cursos/course1/,https://platzi.com/cursos/course2/"
+
+      # Optional (defaults shown below)
+      VIDEO_DOWNLOAD_MAX_PARALLEL: "1"
+      VIDEO_DOWNLOAD_BATCH_SIZE: "30"
+      VIDEO_DOWNLOAD_COOLDOWN: "10"
+      VIDEO_DOWNLOAD_START_DELAY: "0.5"
+      VIDEO_DOWNLOAD_LIMIT_RATE: "100M"
+
+      # Optional (defaults shown below)
+      VIDEO_DOWNLOAD_CONCURRENT_FRAGMENTS: "3"
+      VIDEO_DOWNLOAD_FRAGMENT_RETRIES: "20"
+      VIDEO_DOWNLOAD_RETRIES: "20"
+
+      # Optional (defaults shown below)
+      VIDEO_DOWNLOAD_RETRY_SLEEP: "exp=1:20"
+      VIDEO_DOWNLOAD_SLEEP_REQUESTS: "0"
+
+      # Optional
+      KEEP_TMP_FILES: "N"
+
+      # Optional
+      DOWNLOAD_RESOURCES: "Y"
+
+      # Optional
+      SHOW_DOWNLOAD_LOGS: "N"
+
+      # Optional
+      LECTURES_FORMAT_DOWNLOAD: "pdf"
+
+      # Optional
+      COURSE_NAME_DATE_FORMAT: "%Y"
+```
+
+Run:
+
+```bash
+docker compose up
+```
+
+---
+
+## Build manually
+
+```bash
+docker build -t Platzi-Download .
+docker run --rm --env-file .env -v "$PWD/Videos:/app/Videos" Platzi-Download
+```
+
+---
+
+# 🚀 Usage
+
+```bash
+python src/main.py
+```
+
+Supports multiple courses:
+
+```txt
+COURSE_URL=https://course1,https://course2
+```
+
+---
+
+# 📤 Output Structure
+
+```
+Videos/
+ └── Course Name/
+     ├── course_info.md
+     ├── course_image.jpg
+     ├── videos.json    → Present only if KEEP_TMP_FILES=Y
+     ├── responses/     → Present only if KEEP_TMP_FILES=Y
+     ├── VideosLinks/   → Present only if KEEP_TMP_FILES=Y
+     ├── resources/
+     └── *.mp4
+```
+
+# 💡 Key Features
+
+- ⚡ Async scraping pipeline
+- 🎥 yt-dlp optimized downloads
+- 🔁 Retry & recovery system
+- 📦 Batch + cooldown control
+- 🧠 Metadata extraction engine
+- 🧾 Course documentation generator
+- 🐳 Docker-ready deployment
+
+# 🤝 Contributing
+
+Contributions are welcome:
+
+- 🐛 Bug reports
+- 💡 Feature requests
+- 🔧 Pull requests
+
+# ⭐ Support the Project
+
+If this project saves you time or helps you, consider supporting it ❤️
+
+<div align="center">
+
+<a href="https://github.com/sponsors/OscarDogar">
+  <img src="https://capsule-render.vercel.app/api?type=rect&height=120&color=0:ff4d6d,100:7c3aed&text=⭐%20SUPPORT%20THIS%20PROJECT%20ON%20GITHUB%20SPONSORS&fontColor=ffffff&fontSize=28&animation=fadeIn" />
+</a>
+
+</div>
+
+# 📜 License
+
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.
+
+You are free to:
+
+- ✔️ Use
+- ✔️ Modify
+- ✔️ Distribute
+
+But you must:
+
+- 🔒 Keep source code open when distributing
+- 🔒 Keep the same license (GPL-3.0)
+- 🔒 Preserve copyright & license notices
+
+👉 https://www.gnu.org/licenses/gpl-3.0.html
+
+<div align="center">
+
+### 🚀 Automate everything. Keep it open.
+
+</div>
