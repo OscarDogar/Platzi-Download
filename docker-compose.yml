@@ -12,7 +12,7 @@ services:
     # load environment variables
     # environment:
     #   # Required
-    #   COOKIE: "s=your_cookie_here"
+    #   COOKIE: "your_cookie_here"
 
     #   # Required
     #   # Multiple courses supported (comma-separated)
