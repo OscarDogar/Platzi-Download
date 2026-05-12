@@ -258,7 +258,7 @@ COURSE_NAME_DATE_FORMAT=%Y
 services:
   Platzi-Download:
     container_name: Platzi-Download
-    image: ghcr.io/oscardogar/Platzi-Download:latest
+    image: ghcr.io/oscardogar/platzi-download:latest
     user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - /your/path/:/app/Videos
@@ -272,7 +272,7 @@ You can configure everything directly inside `docker-compose.yml` without using 
 services:
   Platzi-Download:
     container_name: Platzi-Download
-    image: ghcr.io/oscardogar/Platzi-Download:latest
+    image: ghcr.io/oscardogar/platzi-download:latest
     user: "${UID:-1000}:${GID:-1000}"
 
     volumes:

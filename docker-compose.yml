@@ -2,7 +2,7 @@ services:
   Platzi-Download:
     # build: .
     container_name: Platzi-Download
-    image: ghcr.io/oscardogar/Platzi-Download:latest
+    image: ghcr.io/oscardogar/platzi-download:latest
     user: "${UID:-1000}:${GID:-1000}"
     # Mount output folder to your machine (IMPORTANT)
     volumes:
