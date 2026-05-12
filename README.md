@@ -12,9 +12,11 @@
 <img src="https://img.shields.io/github/repo-size/OscarDogar/Platzi-Download?style=for-the-badge" />
 <!--<img src="https://img.shields.io/badge/Automation-Enabled-facc15?style=for-the-badge" />-->
 <img src="https://img.shields.io/github/stars/OscarDogar/Platzi-Download?style=for-the-badge" />
-<img src="https://img.shields.io/github/license/OscarDogar/Platzi-Download?style=for-the-badge" />
+<img src="https://img.shields.io/github/license/OscarDogar/Platzi-Download?style=for-the-badge&cacheSeconds=3600" />
+<a href="https://github.com/OscarDogar/Platzi-Download/pkgs/container/platzi-download">
 <img src="https://img.shields.io/badge/GHCR-Container-blue?style=for-the-badge&logo=docker" />
 <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
+</a>
 
 <a href="https://github.com/sponsors/OscarDogar">
   <img src="https://img.shields.io/badge/⭐%20Sponsor%20This%20Project-ff4d6d?style=for-the-badge&logo=githubsponsors&logoColor=white&labelColor=0f172a" height="45"/>
