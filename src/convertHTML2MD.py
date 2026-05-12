@@ -6,14 +6,16 @@ from config import LECTURES_FORMAT_DOWNLOAD as checkFormatDownload
 
 def convert_html_to_markdown(html,  class_name, filepath):
     """
-    Convert HTML content to Markdown format.
+    Convert HTML content and save it as Markdown or PDF.
 
     Args:
         html (str): The HTML content to convert.
         class_name (str): The class name of the div element to extract.
+        filepath (str): The output file path without the extension.
 
     Returns:
-        str: The converted Markdown content.
+        None: This function writes the converted content to disk and does not
+        return the generated Markdown content.
     """
     # Validate if the file already exists to avoid reprocessing
     filepath = f"{filepath}.md" if checkFormatDownload == "md" else f"{filepath}.pdf"
