@@ -2,7 +2,7 @@ import requests
 import os
 import re
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 import config
 from utils import extract_field, generate_course_md
 from validateHtml import validate_html
@@ -32,10 +32,12 @@ def download_image(img_url, filename):
     if os.path.exists(filename):
         return
     referer = None
+    parsed_url = urlparse(img_url)
+    host = (parsed_url.hostname or "").lower()
 
-    if "imgur.com" in img_url:
+    if host == "imgur.com" or host.endswith(".imgur.com"):
         referer = "https://imgur.com/"
-    elif "platzi.com" in img_url:
+    elif host == "platzi.com" or host.endswith(".platzi.com"):
         referer = "https://platzi.com/"
     headers = {
         "User-Agent": (
