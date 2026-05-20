@@ -15,7 +15,7 @@ fonttools==4.62.1
 frozenlist==1.8.0
 greenlet==3.5.0
 idna==3.14
-lxml==6.1.0
+lxml==6.1.1
 Markdown==3.10.2
 markdown-it-py==4.2.0
 markdownify==1.2.2
