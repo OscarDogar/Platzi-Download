@@ -23,7 +23,7 @@ mdurl==0.1.2
 more-itertools==11.0.2
 multidict==6.7.1
 pillow==12.2.0
-playwright==1.59.0
+playwright==1.60.0
 premailer==3.10.0
 propcache==0.5.2
 pycparser==3.0
