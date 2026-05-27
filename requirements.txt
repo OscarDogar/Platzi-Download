@@ -20,7 +20,7 @@ Markdown==3.10.2
 markdown-it-py==4.2.0
 markdownify==1.2.2
 mdurl==0.1.2
-more-itertools==11.0.2
+more-itertools==11.1.0
 multidict==6.7.1
 pillow==12.2.0
 playwright==1.60.0
