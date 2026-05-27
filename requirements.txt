@@ -36,7 +36,7 @@ python-dotenv==1.2.2
 requests==2.34.2
 rich==15.0.0
 six==1.17.0
-soupsieve==2.8.3
+soupsieve==2.8.4
 tinycss2==1.5.1
 tinyhtml5==2.1.0
 typing_extensions==4.15.0
