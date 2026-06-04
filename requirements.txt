@@ -14,7 +14,7 @@ cssutils==2.15.0
 fonttools==4.63.0
 frozenlist==1.8.0
 greenlet==3.5.1
-idna==3.16
+idna==3.18
 lxml==6.1.1
 Markdown==3.10.2
 markdown-it-py==4.2.0
