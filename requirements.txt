@@ -5,7 +5,7 @@ attrs==26.1.0
 beautifulsoup4==4.15.0
 brotli==1.2.0
 cachetools==7.1.4
-certifi==2026.5.20
+certifi==2026.6.17
 cffi==2.0.0
 charset-normalizer==3.4.7
 cssselect==1.4.0
@@ -13,7 +13,7 @@ cssselect2==0.9.0
 cssutils==2.15.0
 fonttools==4.63.0
 frozenlist==1.8.0
-greenlet==3.5.1
+greenlet==3.5.2
 idna==3.18
 lxml==6.1.1
 Markdown==3.10.2
