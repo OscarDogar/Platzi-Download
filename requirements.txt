@@ -5,7 +5,7 @@ attrs==26.1.0
 beautifulsoup4==4.15.0
 brotli==1.2.0
 cachetools==7.1.4
-certifi==2026.5.20
+certifi==2026.6.17
 cffi==2.0.0
 charset-normalizer==3.4.7
 cssselect==1.4.0
