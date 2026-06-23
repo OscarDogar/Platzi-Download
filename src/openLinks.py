@@ -1,12 +1,12 @@
 import asyncio
 import os
 import random
-import aiohttp
+from curl_cffi.requests import AsyncSession
 from playwright.async_api import async_playwright
 import config
 
 MAX_RETRIES = 2
-BATCH_SIZE = 30  
+BATCH_SIZE = 30
 
 
 async def fetch_http(session, url, filename, semaphore):
@@ -14,18 +14,24 @@ async def fetch_http(session, url, filename, semaphore):
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 # await asyncio.sleep(random.uniform(0.5, 1.5))
-                async with session.get(
-                    url, headers=config.headers, timeout=20
-                ) as response:
-                    if response.status != 200:
-                        raise Exception(f"HTTP {response.status}")
-                    text = await response.text()
-                    with open(filename, "w", encoding="utf-8") as f:
-                        f.write(text)
-                    if config.SHOW_DOWNLOAD_LOGS == "y":
-                        print(f"[HTTP OK] {url}")
-                    return {"status": "success", "url": url, "filename": filename}
+                response = await session.get(
+                    url,
+                    headers=config.headers,
+                    timeout=60,
+                )
+                if response.status_code != 200:
+                    raise Exception(f"HTTP {response.status_code}")
+                text = response.text
+                with open(filename, "w", encoding="utf-8") as f:
+                    f.write(text)
+                if config.SHOW_DOWNLOAD_LOGS == "y":
+                    print(f"[HTTP OK] {url}")
+                return {"status": "success", "url": url, "filename": filename}
             except Exception as e:
+                if config.SHOW_DOWNLOAD_LOGS == "y" or attempt == MAX_RETRIES:
+                    print(
+                        f"[HTTP FAILED] {url} -> {e} (Attempt {attempt}/{MAX_RETRIES})"
+                    )
                 if attempt == MAX_RETRIES:
                     return {"status": "failed", "url": url, "filename": filename}
                 await asyncio.sleep(2**attempt)
@@ -65,8 +71,10 @@ async def openLinks(urls, names):
             )
             pw_instance["page"] = await context.new_page()
 
-    async with aiohttp.ClientSession(
-        headers=config.headers, cookies=config.COOKIES
+    async with AsyncSession(
+        headers=config.headers,
+        cookies=config.COOKIES,
+        impersonate="chrome",
     ) as session:
         for i in range(0, len(urls), BATCH_SIZE):
             batch_urls = urls[i : i + BATCH_SIZE]
