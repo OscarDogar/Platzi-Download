@@ -28,7 +28,10 @@ async def fetch_http(session, url, filename, semaphore):
                     print(f"[HTTP OK] {url}")
                 return {"status": "success", "url": url, "filename": filename}
             except Exception as e:
-                print(f"[HTTP FAILED] {url} -> {e} (Attempt {attempt}/{MAX_RETRIES})")
+                if config.SHOW_DOWNLOAD_LOGS == "y" or attempt == MAX_RETRIES:
+                    print(
+                        f"[HTTP FAILED] {url} -> {e} (Attempt {attempt}/{MAX_RETRIES})"
+                    )
                 if attempt == MAX_RETRIES:
                     return {"status": "failed", "url": url, "filename": filename}
                 await asyncio.sleep(2**attempt)
