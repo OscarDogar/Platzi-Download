@@ -47,5 +47,5 @@ urllib3==2.7.0
 weasyprint==69.0
 webencodings==0.5.1
 yarl==1.24.2
-yt-dlp==2026.6.9
+yt-dlp==2026.7.4
 zopfli==0.4.3
