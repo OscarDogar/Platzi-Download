@@ -11,10 +11,10 @@ def extract_field(text, field):
     try:
         matches = re.findall(r'push\(\[\d+,"(.*?)"\]\)', text)
         joined = "".join(matches)
-        
+
         # This codec is much more lenient with truncated backslashes
-        decoded = joined.encode('utf-8').decode('unicode_escape', errors='ignore')
-        
+        decoded = joined.encode("utf-8").decode("unicode_escape", errors="ignore")
+
         # Standard regex search
         match = re.search(rf'"{field}":"([^"]+)"', decoded)
         return match.group(1) if match else None
@@ -98,34 +98,34 @@ def generate_course_md(
         return
 
     md = dedent(f"""
-    # {courseName}
+# {courseName}
 
-    ---
+---
 
-    ## 📌 Información general
+## 📌 Información general
 
-    - ⭐ **Rating:** {reviews or "N/A"}
-    - 📅 **Fecha de publicación:** {launch_date or "N/A"}
-    - 📘 **Nivel:** {level or "N/A"}
-    - 🎬 **Número de clases:** {number_of_classes or "N/A"}
-    - ⏱ **Duración total:** {duration_content or "N/A"}
-    - 🔗 **Enlace:** {url or "N/A"}
+- ⭐ **Rating:** {reviews or "N/A"}
+- 📅 **Fecha de publicación:** {launch_date or "N/A"}
+- 📘 **Nivel:** {level or "N/A"}
+- 🎬 **Número de clases:** {number_of_classes or "N/A"}
+- ⏱ **Duración total:** {duration_content or "N/A"}
+- 🔗 **Enlace:** {url or "N/A"}
 
-    ---
+---
 
-    ## 🧾 Descripción del curso
+## 🧾 Descripción del curso
 
-    {description or "Sin descripción disponible."}
+{description or "Sin descripción disponible."}
 
-    ---
+---
 
-    ## 👨‍🏫 Instructor
+## 👨‍🏫 Instructor
 
-    ### {professors or "Instructor no disponible"}
+### {professors or "Instructor no disponible"}
 
-    ![Instructor]({professors_img or ""})
+![Instructor]({professors_img or ""})
 
-    {professors_description or "Sin información adicional del instructor."}
+{professors_description or "Sin información adicional del instructor."}
 
     """).strip()
 
