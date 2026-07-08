@@ -68,15 +68,22 @@ def getVideos():
             ]  # Assuming the format is "01_Class_Name.html"
             if media_url:
                 if "m3u8" not in media_url:
-                    pattern = r'https:\/\/api\.platzi\.com\/mdstrm\/v1\/video\/.*?\.m3u8.*?(?=2a:)'
+                    pattern = r"https:\/\/api\.platzi\.com\/mdstrm\/v1\/video\/.*?\.m3u8.*?(?=(?:2a|29):)"
                     match = re.search(pattern, html, re.DOTALL)
                     if match:
-                        print(
-                            f"⚠️  [WARN] {html_file.name} with URL {media_url} "
-                            "-> media_url does not contain a video link"
-                        ) if config.SHOW_DOWNLOAD_LOGS == "y" else None
                         media_url = match.group(0).replace("\\/", "/")
-                        media_url = re.sub(r'"\]\)</script><script>self\.__next_f\.push\(\[1,"', '', media_url)
+                        media_url = re.sub(
+                            r'"\]\)</script><script>self\.__next_f\.push\(\[1,"',
+                            "",
+                            media_url,
+                        )
+                        (
+                            print(
+                                f"⚠️  [WARN] The media_url for {html_file.name} has been updated to {media_url}"
+                            )
+                            if config.SHOW_DOWNLOAD_LOGS == "y"
+                            else None
+                        )
                 video_links.append(
                     {
                         "name": html_file.stem,
@@ -90,7 +97,7 @@ def getVideos():
                 convert_html_to_markdown(
                     html,
                     "Lecture_Lecture",
-                    f"{config.FULL_PATH}/{class_number}. Class Lecture",
+                    f"{config.FULL_PATH}/{html_file.stem} Class Lecture",
                 )
                 # delete the html file if no media_url is found to avoid processing it again in the future
                 os.remove(html_file)

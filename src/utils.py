@@ -98,36 +98,52 @@ def generate_course_md(
         return
 
     md = dedent(f"""
-# {courseName}
+# 🎓 {courseName}
+
+> *Descubre todo sobre el curso.*
 
 ---
 
-## 📌 Información general
+## 📋 Detalles del Curso
 
-- ⭐ **Rating:** {reviews or "N/A"}
-- 📅 **Fecha de publicación:** {launch_date or "N/A"}
-- 📘 **Nivel:** {level or "N/A"}
-- 🎬 **Número de clases:** {number_of_classes or "N/A"}
-- ⏱ **Duración total:** {duration_content or "N/A"}
-- 🔗 **Enlace:** {url or "N/A"}
+| 🏷️ Atributo | 📌 Detalle |
+| :--- | :--- |
+| ⭐ **Rating** | {reviews or "N/A"} |
+| 📅 **Publicación** | {launch_date or "N/A"} |
+| 📊 **Nivel** | {level or "N/A"} |
+| 🎬 **Total de Clases** | {number_of_classes or "N/A"} |
+| ⏱️ **Duración** | {duration_content or "N/A"} |
+| 🔗 **Enlace** | {f"[Acceder al curso 🚀]({url})" if url else "N/A"} |
 
 ---
 
-## 🧾 Descripción del curso
+## 📝 Acerca de este curso
 
-{description or "Sin descripción disponible."}
+{description or "> La descripción de este curso no está disponible en este momento."}
 
 ---
 
 ## 👨‍🏫 Instructor
 
-### {professors or "Instructor no disponible"}
+### **{professors or "Instructor no especificado"}**
 
-![Instructor]({professors_img or ""})
+<table>
+  <tr>
+    <td width="20%" align="center" style="border: none; padding-right: 20px;">
+      <img 
+        src="{professors_img or 'https://via.placeholder.com/150'}" 
+        alt="Foto del instructor" 
+        width="140" 
+        style="border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"
+      />
+    </td>
+    <td width="80%" style="border: none; vertical-align: top;">
+      {professors_description or "La biografía del instructor no está disponible en este momento."}
+    </td>
+  </tr>
+</table>
 
-{professors_description or "Sin información adicional del instructor."}
-
-    """).strip()
+""").strip()
 
     if output_path:
         with open(output_path, "w", encoding="utf-8") as f:

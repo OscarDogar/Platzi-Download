@@ -121,7 +121,8 @@ def process_batch(video_list):
     failed = []
     completed = 0
     batch_counter = 0
-    for video in video_list:
+    for index, video in enumerate(video_list):
+        print(f"\n[{index + 1}/{len(video_list)}] Processing video: {video['name']}")
         name = video["name"]
         url = video["url"]
         if file_exists(name):

@@ -24,11 +24,13 @@ def convert_html_to_markdown(html, class_name, filepath):
     if os.path.exists(filepath):
         return
     soup = BeautifulSoup(html, "html.parser")
-    content = soup.select_one(f'section[class*="{class_name}"]')
+    content = soup.select_one(f'section[class*="{class_name}"]') or soup.select_one(
+        f'div[class*="{class_name}"]'
+    )
     if content is None:
         if config.SHOW_DOWNLOAD_LOGS == "y":
             print(
-                f"[WARNING] Skipping conversion for {filepath.split('/')[-1]}. No content found for class '{class_name}' in HTML. "
+                f"[WARNING] Skipping conversion for {os.path.basename(filepath)}. No content found for class '{class_name}' in HTML. "
             )
         return
     markdown_content = markdownify.markdownify(str(content), heading_style="ATX")
