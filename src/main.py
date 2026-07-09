@@ -29,6 +29,7 @@ Exit Behavior:
 """
 
 from extractCourseLinks import getLinks
+from extractRouteLinks import is_route_url, getRouteCourseLinks
 from openLinks import openLinks
 import config
 from getVideosLink import openVideoLinks
@@ -70,6 +71,17 @@ def process_course(url: str) -> None:
         print("You can run the script again to retry missing downloads.")
 
 
+def process_route(url: str) -> None:
+    print(f"\n🛤️  Processing route: {url}")
+    route_name, course_urls = getRouteCourseLinks(url)
+    config.set_route_name(route_name)
+    try:
+        for course_url in course_urls:
+            process_course(course_url)
+    finally:
+        config.set_route_name(None)
+
+
 def main() -> None:
     """
     Main entry point for the application.
@@ -78,7 +90,10 @@ def main() -> None:
         menu()
         config.validate_config()
         for url in config.COURSE_URL:
-            process_course(url)
+            if is_route_url(url):
+                process_route(url)
+            else:
+                process_course(url)
         print("\n🚀 All done!")
         print(
             clickable_link(

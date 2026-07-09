@@ -67,6 +67,13 @@ BASE_FOLDER = "Videos"
 DYNAMIC_NAME = None
 FULL_PATH = None
 
+ROUTE_NAME = None
+
+
+def set_route_name(name):
+    global ROUTE_NAME
+    ROUTE_NAME = name
+
 
 def set_dynamic_name(name):
     """
@@ -89,7 +96,10 @@ def set_dynamic_name(name):
     """
     global DYNAMIC_NAME, FULL_PATH, FULL_PATH_HTML, FULL_PATH_LINKS, FULL_PATH_VIDEOS, FULL_PATH_RESOURCES
     DYNAMIC_NAME = name
-    FULL_PATH = f"{BASE_FOLDER}/{DYNAMIC_NAME}"
+    if ROUTE_NAME:
+        FULL_PATH = f"{BASE_FOLDER}/{ROUTE_NAME}/{DYNAMIC_NAME}"
+    else:
+        FULL_PATH = f"{BASE_FOLDER}/{DYNAMIC_NAME}"
     FULL_PATH_LINKS = FULL_PATH + "/VideosLinks"
     FULL_PATH_HTML = FULL_PATH + "/responses"
     FULL_PATH_VIDEOS = FULL_PATH + "/videos.json"
