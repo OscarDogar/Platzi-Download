@@ -87,7 +87,7 @@ def generate_course_md(
     professors_img,
     professors_description,
     reviews,
-    opinions,
+    opinions=None,
     url=None,
     output_path=None,
 ):
