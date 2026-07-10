@@ -149,6 +149,20 @@ def extractLinksFromPage(html, url):
         'span[class*="CourseMetrics_CourseMetrics__Stars__Number"]'
     )
     reviews = reviews_tag.get_text(strip=True) if reviews_tag else None
+    opinions_tag = soup.select_one(
+        'span[class*="CourseMetrics_CourseMetrics__Opinions__Text"]'
+    )
+    if opinions_tag:
+        raw_opinions = opinions_tag.get_text(strip=True)
+        m = re.match(r"^(\d+)\s*(\D.*)?$", raw_opinions)
+        if m:
+            num = m.group(1)
+            text = m.group(2).strip() if m.group(2) else "Opiniones"
+            opinions = f"{num} {text.capitalize()}"
+        else:
+            opinions = raw_opinions
+    else:
+        opinions = None
 
     config.COURSE_ID = extract_field(html, "courseId")
     # get year from launch_date
@@ -171,10 +185,15 @@ def extractLinksFromPage(html, url):
         professors_img,
         professors_description,
         reviews,
+        opinions,
         url,
         os.path.join(config.FULL_PATH, "course_info.md"),
     )
-    img = soup.find("meta", property="og:image")["content"] if soup.find("meta", property="og:image") else extract_field(html, "thumbnail_url") 
+    img = (
+        soup.find("meta", property="og:image")["content"]
+        if soup.find("meta", property="og:image")
+        else extract_field(html, "thumbnail_url")
+    )
     if img:
         download_image(img, os.path.join(config.FULL_PATH, "course_image.jpg"))
     # Save links in a file in the config.FULL_PATH_LINKS

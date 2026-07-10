@@ -87,6 +87,7 @@ def generate_course_md(
     professors_img,
     professors_description,
     reviews,
+    opinions=None,
     url=None,
     output_path=None,
 ):
@@ -106,9 +107,10 @@ def generate_course_md(
 
 ## 📋 Detalles del Curso
 
-| 🏷️ Atributo | 📌 Detalle |
-| :--- | :--- |
+| | |
+| :-- | :-- |
 | ⭐ **Rating** | {reviews or "N/A"} |
+| 📝 **Opiniones** | {opinions or "N/A"} |
 | 📅 **Publicación** | {launch_date or "N/A"} |
 | 📊 **Nivel** | {level or "N/A"} |
 | 🎬 **Total de Clases** | {number_of_classes or "N/A"} |
