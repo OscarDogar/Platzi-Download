@@ -4,14 +4,14 @@
 
 <br/>
 
+<img src="https://img.shields.io/badge/Status-Active-22c55e?style=for-the-badge" />
+<img src="https://img.shields.io/github/last-commit/OscarDogar/Platzi-Download?style=for-the-badge" />
+<img src="https://img.shields.io/github/stars/OscarDogar/Platzi-Download?style=for-the-badge" />
 <img src="https://img.shields.io/badge/Python-3.12+-blue?style=for-the-badge&logo=python" />
 <img src="https://img.shields.io/github/v/release/OscarDogar/Platzi-Download?style=for-the-badge" />
-<img src="https://img.shields.io/badge/Status-Active-22c55e?style=for-the-badge" />
 <img src="https://img.shields.io/github/downloads/OscarDogar/Platzi-Download/total?style=for-the-badge" />
-<img src="https://img.shields.io/github/last-commit/OscarDogar/Platzi-Download?style=for-the-badge" />
 <img src="https://img.shields.io/github/repo-size/OscarDogar/Platzi-Download?style=for-the-badge" />
 <!--<img src="https://img.shields.io/badge/Automation-Enabled-facc15?style=for-the-badge" />-->
-<img src="https://img.shields.io/github/stars/OscarDogar/Platzi-Download?style=for-the-badge" />
 <img src="https://img.shields.io/github/license/OscarDogar/Platzi-Download?style=for-the-badge&cacheSeconds=3600" />
 <a href="https://github.com/OscarDogar/Platzi-Download/pkgs/container/platzi-download">
 <img src="https://img.shields.io/badge/GHCR-Container-blue?style=for-the-badge&logo=docker" />
@@ -54,19 +54,50 @@ This new version is significantly:
 - 🛡️ **Less error-prone**, with improved retry and parsing logic
 - 📦 Containerized for the default downloader workflow; optional Playwright/Chromium fallback requires additional browser setup
 
-## 📚 Multi-Course Support
+## 📚 Multi-Course & Route Support
 
-You can now download **one or multiple courses at the same time** using the `COURSE_URL` variable.
+You can download:
 
-### 📌 Example
+- ✅ A single course
+- ✅ Multiple courses
+- ✅ A complete Platzi Route
+  💙 Special thanks to **[@a-peirogon](https://github.com/a-peirogon)** for contributing the Platzi Route implementation.
+
+The downloader automatically detects whether each URL is a course or a route.
+
+If a route URL is provided, it will:
+
+1. Extract every course contained in the route.
+2. Remove duplicate courses.
+3. Download all courses sequentially.
+
+### 📌 Examples
+
+Single course
 
 ```env
-COURSE_URL=https://course1,https://course2,https://course3
+COURSE_URL=https://platzi.com/cursos/python/
 ```
 
-Just separate each course URL with a comma.
+Multiple courses
 
-The downloader will process them sequentially in a single execution.
+```env
+COURSE_URL=https://platzi.com/cursos/python/,https://platzi.com/cursos/docker/
+```
+
+Complete route
+
+```env
+COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/
+```
+
+Mix routes and courses
+
+```env
+COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/,https://platzi.com/cursos/python/
+```
+
+The downloader will automatically expand every route into its courses before starting the download.
 
 ## 🔁 Resume & Retry Behavior
 
@@ -88,18 +119,21 @@ This makes the system resilient to network issues or temporary failures.
 # 🧱 Architecture
 
 ```txt
-Course URL
-   ↓
-Extract Links
-   ↓
+Course / Route URL
+        ↓
+Detect URL Type
+        ↓
+Extract Course Links
+(Route → Courses)
+        ↓
 Fetch HTML (async)
-   ↓
+        ↓
 Parse Video Metadata
-   ↓
+        ↓
 Generate videos.json
-   ↓
+        ↓
 Download Videos (yt-dlp)
-   ↓
+        ↓
 Optional Resources + Cleanup
 ```
 
@@ -110,6 +144,7 @@ src/
  ├── main.py                 → Entry point
  ├── config.py               → Environment & validation
  ├── extractCourseLinks.py   → Course parsing
+ ├── extractRouteLinks.py    → Route → Course extraction
  ├── openLinks.py            → Async HTML fetching
  ├── getVideosLink.py        → Video extraction logic
  ├── downloadVideos.py       → yt-dlp downloader
@@ -164,7 +199,8 @@ s
 ## ⚙️ Example `.env`
 
 ```env
-COOKIE=your_cookie_value_here
+#COOKIE=your_cookie_value_here
+s=ydioioapokxasoijqweopksdopic
 ```
 
 ## ⚠️ Important Notes
@@ -185,7 +221,7 @@ All configuration is handled via `.env`.
 | Variable                            | Required | Default    | Description                                  |
 | ----------------------------------- | -------- | ---------- | -------------------------------------------- |
 | COOKIE                              | ✅ Yes   | -          | Platzi session cookie                        |
-| COURSE_URL                          | ✅ Yes   | -          | Course URLs (comma-separated)                |
+| COURSE_URL                          | ✅ Yes   | -          | Course and/or Route URLs (comma-separated)   |
 | VIDEO_DOWNLOAD_MAX_PARALLEL         | Optional | `1`        | Maximum simultaneous video downloads         |
 | VIDEO_DOWNLOAD_BATCH_SIZE           | Optional | `30`       | Number of downloads before cooldown          |
 | VIDEO_DOWNLOAD_COOLDOWN             | Optional | `10`       | Delay between download batches (seconds)     |
@@ -229,9 +265,19 @@ All configuration is handled via `.env`.
 ## 📄 Example `.env`
 
 ```env
-COOKIE=your_cookie_here
+s=your_cookie_here
 
+# Single course
 COURSE_URL=https://platzi.com/cursos/example-course/
+
+# Multiple courses
+# COURSE_URL=https://platzi.com/cursos/course1/,https://platzi.com/cursos/course2/
+
+# Complete route
+# COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/
+
+# Mix routes and courses
+# COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/,https://platzi.com/cursos/python/
 
 VIDEO_DOWNLOAD_MAX_PARALLEL=1
 VIDEO_DOWNLOAD_BATCH_SIZE=30
@@ -269,6 +315,7 @@ services:
 ```
 
 You can configure everything directly inside `docker-compose.yml` without using a separate `.env` file.
+Just copy the compose file below, update the required values (such as `your_cookie_here`, `COURSE_URL`, and the volume path):
 
 ```yaml
 services:
@@ -282,11 +329,11 @@ services:
 
     environment:
       # Required
-      COOKIE: "your_cookie_here"
+      s: "your_cookie_here"
 
       # Required
-      # Multiple courses supported (comma-separated)
-      COURSE_URL: "https://platzi.com/cursos/course1/,https://platzi.com/cursos/course2/"
+      # Supports courses and routes (comma-separated)
+      COURSE_URL: "https://platzi.com/ruta/administracion-de-servidores-linux/,https://platzi.com/cursos/python/"
 
       # Optional (defaults shown below)
       VIDEO_DOWNLOAD_MAX_PARALLEL: "1"
@@ -343,10 +390,17 @@ docker run --rm --env-file .env -v "$PWD/Videos:/app/Videos" Platzi-Download
 python src/main.py
 ```
 
-Supports multiple courses:
+Supports multiple courses and routes (comma-separated):
 
 ```txt
+# Multiple courses
 COURSE_URL=https://course1,https://course2
+
+# Complete route
+COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/
+
+# Mix routes and courses
+COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/,https://course1
 ```
 
 ---
@@ -355,14 +409,35 @@ COURSE_URL=https://course1,https://course2
 
 ```
 Videos/
- └── Course Name/
-     ├── course_info.md
-     ├── course_image.jpg
-     ├── videos.json    → Present only if KEEP_TMP_FILES=Y
-     ├── responses/     → Present only if KEEP_TMP_FILES=Y
-     ├── VideosLinks/   → Present only if KEEP_TMP_FILES=Y
-     ├── resources/
-     └── *.mp4
+├── Course Name/
+│   ├── course_info.md
+│   ├── course_image.jpg
+│   ├── videos.json    → Present only if KEEP_TMP_FILES=Y
+│   ├── responses/     → Present only if KEEP_TMP_FILES=Y
+│   ├── VideosLinks/   → Present only if KEEP_TMP_FILES=Y
+│   ├── resources/
+│   └── *.mp4
+│
+└── Route Name/
+    ├── Course 1/
+    │   ├── course_info.md
+    │   ├── course_image.jpg
+    │   ├── videos.json    → Present only if KEEP_TMP_FILES=Y
+    │   ├── responses/     → Present only if KEEP_TMP_FILES=Y
+    │   ├── VideosLinks/   → Present only if KEEP_TMP_FILES=Y
+    │   ├── resources/
+    │   └── *.mp4
+    │
+    ├── Course 2/
+    │   ├── course_info.md
+    │   ├── course_image.jpg
+    │   ├── videos.json    → Present only if KEEP_TMP_FILES=Y
+    │   ├── responses/     → Present only if KEEP_TMP_FILES=Y
+    │   ├── VideosLinks/   → Present only if KEEP_TMP_FILES=Y
+    │   ├── resources/
+    │   └── *.mp4
+    │
+    └── ...
 ```
 
 # 💡 Key Features
@@ -374,6 +449,7 @@ Videos/
 - 🧠 Metadata extraction engine
 - 🧾 Course documentation generator
 - 🐳 Docker-ready deployment
+- 🗂️ Automatic Platzi Route support (downloads every course in a route)
 
 # 🤝 Contributing
 
@@ -382,6 +458,26 @@ Contributions are welcome:
 - 🐛 Bug reports
 - 💡 Feature requests
 - 🔧 Pull requests
+
+# 🤝 Contributors
+
+Every contribution, whether it's a bug report, feature request, documentation improvement, or code submission helps make **Platzi-Download** better for everyone.
+
+A huge thank you to everyone who has taken the time to contribute to this project. ❤️
+
+<div align="center">
+
+<a href="https://github.com/oscardogar/platzi-download/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=oscardogar/platzi-download" alt="Contributors"/>
+</a>
+
+**Want to see your avatar here?**
+
+Contributions of all sizes are welcome! Feel free to open an issue, submit a pull request, or help improve the documentation.
+
+⭐ If you find this project useful, don't forget to star the repository!
+
+</div>
 
 # ⭐ Support the Project
 
