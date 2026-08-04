@@ -19,7 +19,7 @@ frozenlist==1.8.0
 greenlet==3.5.4
 idna==3.18
 lxml==6.1.1
-Markdown==3.10.2
+Markdown==3.10.3
 markdown-it-py==4.2.0
 markdownify==1.2.3
 mdurl==0.1.2
