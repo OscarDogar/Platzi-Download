@@ -4,10 +4,10 @@ aiosignal==1.4.0
 attrs==26.1.0
 beautifulsoup4==4.15.0
 brotli==1.2.0
-cachetools==7.1.6
+cachetools==7.1.7
 certifi==2026.7.22
-cffi==2.1.0
-chardet==7.4.3
+cffi==2.1.1
+chardet==7.5.1
 charset-normalizer==3.4.9
 cssselect==1.5.0
 cssselect2==0.9.0
@@ -39,7 +39,7 @@ python-dotenv==1.2.2
 requests==2.34.2
 rich==15.0.0
 six==1.17.0
-soupsieve==2.9.1
+soupsieve==2.9.2
 tinycss2==1.5.1
 tinyhtml5==2.1.0
 typing_extensions==4.16.0
