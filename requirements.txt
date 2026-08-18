@@ -31,7 +31,7 @@ premailer==3.10.0
 propcache==0.5.2
 pycparser==3.0
 pydyf==0.12.1
-pyee==13.0.1
+pyee==14.0.0
 pyfiglet==1.0.4
 Pygments==2.20.0
 pyphen==0.17.2
