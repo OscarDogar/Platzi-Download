@@ -34,7 +34,7 @@ pydyf==0.12.1
 pyee==13.0.1
 pyfiglet==1.0.4
 Pygments==2.20.0
-pyphen==0.17.2
+pyphen==0.18.1
 python-dotenv==1.2.2
 requests==2.34.2
 rich==15.0.0
