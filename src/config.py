@@ -1,4 +1,7 @@
+
+"""Configuration settings and path helpers for the Platzi downloader."""
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Headers
@@ -19,6 +22,12 @@ COURSE_NAME_DATE_FORMAT = os.environ.get("COURSE_NAME_DATE_FORMAT", "%Y")
 
 
 def validate_config():
+    """Validate environment-backed configuration values.
+
+    Raises:
+        ValueError: If a boolean option is not ``y`` or ``n``, or if the
+            lecture download format is not ``md`` or ``pdf``.
+    """
     if KEEP_TMP_FILES not in ("y", "n"):
         raise ValueError("KEEP_TMP_FILES must be 'y' or 'n'")
     if DOWNLOAD_RESOURCES not in ("y", "n"):
@@ -63,7 +72,7 @@ else:
 
 COURSE_ID = None
 
-BASE_FOLDER = "Videos"
+BASE_FOLDER = Path("Videos")
 DYNAMIC_NAME = None
 FULL_PATH = None
 
@@ -71,35 +80,34 @@ ROUTE_NAME = None
 
 
 def set_route_name(name):
+    """Set the route name used when building the course output path.
+
+    Args:
+        name (str): Route name to use for subsequent path construction.
+    """
     global ROUTE_NAME
     ROUTE_NAME = name
 
 
 def set_dynamic_name(name):
-    """
-    Set the dynamic name and update all related path variables.
+    """Set the course name and update all related output paths.
 
-    This function sets the DYNAMIC_NAME and updates all global path variables
-    (FULL_PATH, FULL_PATH_HTML, FULL_PATH_LINKS, FULL_PATH_VIDEOS) based on the
-    provided name parameter.
+    The generated paths include the configured route name when one has been
+    set. All paths are stored as strings for use by the rest of the project.
 
     Args:
-        name (str): The dynamic name to set, used as a subdirectory under BASE_FOLDER.
+        name (str): Course name used as a subdirectory under ``BASE_FOLDER``.
 
-    Global Variables Modified:
-        DYNAMIC_NAME (str): The dynamic name identifier.
-        FULL_PATH (str): Base path constructed as {BASE_FOLDER}/{DYNAMIC_NAME}.
-        FULL_PATH_LINKS (str): Path to video links directory.
-        FULL_PATH_HTML (str): Path to HTML responses directory.
-        FULL_PATH_VIDEOS (str): Path to videos.json file.
-        FULL_PATH_RESOURCES (str): Path to resources directory.
+    Side Effects:
+        Updates ``DYNAMIC_NAME``, ``FULL_PATH``, and the related output path
+        globals.
     """
     global DYNAMIC_NAME, FULL_PATH, FULL_PATH_HTML, FULL_PATH_LINKS, FULL_PATH_VIDEOS, FULL_PATH_RESOURCES
     DYNAMIC_NAME = name
     if ROUTE_NAME:
-        FULL_PATH = f"{BASE_FOLDER}/{ROUTE_NAME}/{DYNAMIC_NAME}"
+        FULL_PATH = str((BASE_FOLDER / ROUTE_NAME / DYNAMIC_NAME).resolve())
     else:
-        FULL_PATH = f"{BASE_FOLDER}/{DYNAMIC_NAME}"
+        FULL_PATH = str((BASE_FOLDER / DYNAMIC_NAME).resolve())
     FULL_PATH_LINKS = FULL_PATH + "/VideosLinks"
     FULL_PATH_HTML = FULL_PATH + "/responses"
     FULL_PATH_VIDEOS = FULL_PATH + "/videos.json"

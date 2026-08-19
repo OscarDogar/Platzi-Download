@@ -1,8 +1,10 @@
-from bs4 import BeautifulSoup
-import markdownify
+"""Utilities to convert HTML content into Markdown or PDF files."""
+
 import os
+import markdownify
+from bs4 import BeautifulSoup
+from convert_md_2_pdf import convert_html_to_pdf
 import config
-from convertMD2PDF import convert_html_to_pdf
 from config import LECTURES_FORMAT_DOWNLOAD as checkFormatDownload
 
 
