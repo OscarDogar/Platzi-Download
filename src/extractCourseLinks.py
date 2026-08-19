@@ -105,7 +105,7 @@ def extractLinksFromPage(html, url):
     ]
     names = [
         cleanName(a.get_text(strip=True))
-        for a in soup.select('h3[class*="SyllabusSection-module_Item__Title"]')
+        for a in soup.select('[class*="SyllabusSection-module_Item__Title"]')
     ]
     courseName = soup.select_one("h1").get_text(strip=True)
     raw_date = extract_field(html, "launch_date")
