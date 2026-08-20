@@ -28,6 +28,7 @@ Exit Behavior:
     - Suggests re-running the script if videos are missing
 """
 
+import asyncio
 from extractCourseLinks import getLinks
 from extractRouteLinks import is_route_url, getRouteCourseLinks
 from openLinks import openLinks
@@ -35,7 +36,6 @@ import config
 from getVideosLink import openVideoLinks
 from downloadVideos import download_videos
 from utils import clickable_link, count_download_videos, delete_tmp_files, menu
-import asyncio
 
 
 def process_course(url: str) -> None:
