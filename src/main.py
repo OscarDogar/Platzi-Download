@@ -29,6 +29,8 @@ Exit Behavior:
 """
 
 import asyncio
+import sys
+import os
 from extractCourseLinks import getLinks
 from extractRouteLinks import is_route_url, getRouteCourseLinks
 from openLinks import openLinks
@@ -113,4 +115,10 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    # region Adjust PATH for frozen executable (e.g., PyInstaller)
+    if getattr(sys, "frozen", False):
+        meipass = sys.__dict__.get("_MEIPASS")
+        if meipass:
+            os.environ["PATH"] = meipass + os.pathsep + os.environ.get("PATH", "")
+    # endregion
     main()

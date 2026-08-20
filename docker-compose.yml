@@ -1,5 +1,5 @@
 services:
-  Platzi-Download:
+  platzi-download:
     # build: .
     container_name: Platzi-Download
     image: ghcr.io/oscardogar/platzi-download:latest
