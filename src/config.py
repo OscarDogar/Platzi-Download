@@ -17,7 +17,7 @@ load_dotenv()  # Load environment variables from .env file
 KEEP_TMP_FILES = os.environ.get("KEEP_TMP_FILES", "N").lower()
 DOWNLOAD_RESOURCES = os.environ.get("DOWNLOAD_RESOURCES", "Y").lower()
 SHOW_DOWNLOAD_LOGS = os.environ.get("SHOW_DOWNLOAD_LOGS", "N").lower()
-LECTURES_FORMAT_DOWNLOAD = os.environ.get("LECTURES_FORMAT_DOWNLOAD", "PDF").lower()
+LECTURES_FORMAT_DOWNLOAD = os.environ.get("LECTURES_FORMAT_DOWNLOAD", "MD").lower()
 COURSE_NAME_DATE_FORMAT = os.environ.get("COURSE_NAME_DATE_FORMAT", "%Y")
 
 
