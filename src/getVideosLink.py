@@ -55,57 +55,55 @@ def getVideos():
     # Open html files in responses folder
     video_links = []
     for html_file in Path(config.FULL_PATH_HTML).glob("*.html"):
+        # Skip files that already exist in videos.json
+        if validate_if_video_exist_in_json(html_file.stem):
+            continue
         with open(html_file, "r", encoding="utf-8") as f:
-            if validate_if_video_exist_in_json(html_file.stem):
-                # print(f"[SKIP] {html_file.name} (already in videos.json)")
-                continue
             html = f.read()
-            video_links = [v for v in video_links if v["name"] != html_file.stem]
-            media_url = extract_field(html, "media_url")
-            materialId = extract_field(html, "materialId")
-            class_number = html_file.stem.split(".")[
-                0
-            ]  # Assuming the format is "01_Class_Name.html"
-            if media_url:
-                if "m3u8" not in media_url:
-                    pattern = r"https:\/\/api\.platzi\.com\/mdstrm\/v1\/video\/.*?\.m3u8.*?(?=(?:2a|29):)"
-                    match = re.search(pattern, html, re.DOTALL)
-                    if match:
-                        media_url = match.group(0).replace("\\/", "/")
-                        media_url = re.sub(
-                            r'"\]\)</script><script>self\.__next_f\.push\(\[1,"',
-                            "",
-                            media_url,
-                        )
-                        (
-                            print(
-                                f"⚠️  [WARN] The media_url for {html_file.name} has been updated to {media_url}"
-                            )
-                            if config.SHOW_DOWNLOAD_LOGS == "y"
-                            else None
-                        )
-                video_links.append(
-                    {
-                        "name": html_file.stem,
-                        "url": media_url,
-                        "materialId": materialId,
-                        "class_number": class_number,
-                    }
+        video_links = [v for v in video_links if v["name"] != html_file.stem]
+        media_url = extract_field(html, "media_url")
+        materialId = extract_field(html, "materialId")
+        class_number = html_file.stem.split(".")[0]
+        if media_url:
+            if "m3u8" not in media_url:
+                pattern = (
+                    r"https:\/\/api\.platzi\.com\/mdstrm\/v1\/video\/.*?"
+                    r"\.m3u8.*?(?=(?:2a|29):)"
                 )
-            else:
-                # check if it is a lecture
-                convert_html_to_markdown(
-                    html,
-                    "Lecture_Lecture",
-                    f"{config.FULL_PATH}/{html_file.stem} Class Lecture",
-                )
-                # delete the html file if no media_url is found to avoid processing it again in the future
-                os.remove(html_file)
+                match = re.search(pattern, html, re.DOTALL)
+                if match:
+                    media_url = match.group(0).replace("\\/", "/")
+                    media_url = re.sub(
+                        r'"\]\)</script><script>self\.__next_f\.push\(\[1,"',
+                        "",
+                        media_url,
+                    )
+                    if config.SHOW_DOWNLOAD_LOGS == "y":
+                        print(
+                            f"⚠️ [WARN] The media_url for "
+                            f"{html_file.name} has been updated to {media_url}"
+                        )
+            video_links.append(
+                {
+                    "name": html_file.stem,
+                    "url": media_url,
+                    "materialId": materialId,
+                    "class_number": class_number,
+                }
+            )
+        else:
+            # Check if it is a lecture
             convert_html_to_markdown(
                 html,
-                "Resources_Resources__section__",
-                f"{config.FULL_PATH_RESOURCES}/{class_number}. Class Summary Lecture",
+                "Lecture_Lecture",
+                f"{config.FULL_PATH}/{html_file.stem} Class Lecture",
             )
+            os.remove(html_file)
+        convert_html_to_markdown(
+            html,
+            "Resources_Resources__section__",
+            f"{config.FULL_PATH_RESOURCES}/" f"{class_number}. Class Summary Lecture",
+        )
     return video_links
 
 
