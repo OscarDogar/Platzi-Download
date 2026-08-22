@@ -64,9 +64,13 @@ except KeyError:
     raise RuntimeError("COOKIE environment variable is not set")
 
 COURSE_URL = os.environ.get("COURSE_URL")
-# convert COURSE_URL to a list if it contains multiple URLs separated by commas
+# Split on commas and/or whitespace so a URL-per-line list in .env works
 if COURSE_URL:
-    COURSE_URL = [url.strip() for url in COURSE_URL.split(",")]
+    COURSE_URL = [
+        url.strip()
+        for url in COURSE_URL.replace(",", " ").split()
+        if url.strip()
+    ]
 else:
     raise RuntimeError("COURSE_URL environment variable is not set")
 
