@@ -128,7 +128,7 @@ python src/main.py
 ```text
 Platzi.Download.exe
 ```
-2. Create a `.env` file in the same folder as the compose file and add your **Platzi session cookie** and **course URL**. You can check the [Environment File Configuration](#env-file) section for more details.
+2. Create a `.env` file in the same folder as `Platzi.Download.exe` and add your **Platzi session cookie** and **course URL**. You can check the [Environment File Configuration](#env-file) section for more details.
 
 > You do not need to install Python when using the `.exe`.
 
