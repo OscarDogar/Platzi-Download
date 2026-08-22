@@ -26,7 +26,7 @@
 
 # 📌 Overview
 
-**Downloader** is a Python automation tool designed to download **complete Platzi courses** in a structured and scalable way.
+**Platzi-Download** is a Python automation tool designed to download **complete Platzi courses** in a structured and scalable way.
 
 It handles everything from course parsing to video downloads and optional resources extraction.
 
@@ -43,17 +43,6 @@ The pipeline automatically processes each course URL:
 - 🧹 Cleans temporary files (optional)
 - 📊 Generates structured course output files
 
-# ⚡ Performance Improvements & Usage Updates
-
-## 🚀 Faster & More Stable
-
-This new version is significantly:
-
-- ⚡ **Faster** due to removal of browser automation (no Selenium/ChromeDriver)
-- 🧠 **More stable** using direct HTTP/API-based requests
-- 🛡️ **Less error-prone**, with improved retry and parsing logic
-- 📦 Containerized for the default downloader workflow; optional Playwright/Chromium fallback requires additional browser setup
-
 ## 📚 Multi-Course & Route Support
 
 You can download:
@@ -63,112 +52,223 @@ You can download:
 - ✅ A complete Platzi Route
   💙 Special thanks to **[@a-peirogon](https://github.com/a-peirogon)** for contributing the Platzi Route implementation.
 
-The downloader automatically detects whether each URL is a course or a route.
-
-If a route URL is provided, it will:
-
-1. Extract every course contained in the route.
-2. Remove duplicate courses.
-3. Download all courses sequentially.
-
-### 📌 Examples
-
-Single course
-
-```env
-COURSE_URL=https://platzi.com/cursos/python/
-```
-
-Multiple courses
-
-```env
-COURSE_URL=https://platzi.com/cursos/python/,https://platzi.com/cursos/docker/
-```
-
-Complete route
-
-```env
-COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/
-```
-
-Mix routes and courses
-
-```env
-COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/,https://platzi.com/cursos/python/
-```
-
-The downloader will automatically expand every route into its courses before starting the download.
-
-## 🔁 Resume & Retry Behavior
-
-If any video fails to download:
-
-- ❌ No need for manual recovery
-- 🔄 Simply **run the program again**
-- ✅ The downloader will automatically retry missing or failed videos
-
-This makes the system resilient to network issues or temporary failures.
-
-## 💡 Summary
-
-- ⚡ Faster downloads
-- 🧩 Fewer errors and better stability
-- 📚 Multi-course download support
-- 🔁 Easy retry system (just rerun the script)
-
-# 🧱 Architecture
-
-```txt
-Course / Route URL
-        ↓
-Detect URL Type
-        ↓
-Extract Course Links
-(Route → Courses)
-        ↓
-Fetch HTML (async)
-        ↓
-Parse Video Metadata
-        ↓
-Generate videos.json
-        ↓
-Download Videos (yt-dlp)
-        ↓
-Optional Resources + Cleanup
-```
-
-# 📁 Project Structure
-
-```
-src/
- ├── main.py                 → Entry point
- ├── config.py               → Environment & validation
- ├── extractCourseLinks.py   → Course parsing
- ├── extractRouteLinks.py    → Route → Course extraction
- ├── openLinks.py            → Async HTML fetching
- ├── getVideosLink.py        → Video extraction logic
- ├── downloadVideos.py       → yt-dlp downloader
- ├── downloadResourses.py    → Course resources
- ├── convertHTML2MD.py       → HTML → Markdown/PDF
- ├── convertMD2PDF.py        → Markdown → PDF
- ├── validateHtml.py         → Page validation
- ├── getToken.py             → Auth token handler
- ├── utils.py                → Shared utilities
-```
-
 # 📦 Requirements
 
 - Python **3.12+**
 - Valid **Platzi session cookie**
 - Course URL access
-- `ffmpeg`
+- [ffmpeg](https://www.ffmpeg.org/)
 - Chromium (Playwright fallback)
 
 ```bash
 pip install -r requirements.txt
 ```
 
-# 🔐 How to Get Your Cookie (Required Setup)
+## ⚡ Quick Start
+
+1. Choose your installation method:
+   - [🐧 Linux](#linux)
+   - [🪟 Windows](#windows)
+   - [🐳 Docker](#docker)
+
+2. [Get your Platzi session cookie](#cookie).
+3. [Configure your `.env` file](#env-file).
+4. [Configure your course URL](#usage).
+5. [Results](#output-structure).
+
+---
+
+# 📦 Installation
+
+Choose your platform:
+
+<a id="linux"></a>
+<details>
+<summary><h2>🐧 Linux</h2></summary>
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/OscarDogar/Platzi-Download.git
+cd Platzi-Download
+```
+
+### 2. Create a virtual environment
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Install [FFmpeg](https://www.ffmpeg.org/)
+
+
+### 5. Run
+
+```bash
+python src/main.py
+```
+
+</details>
+
+<a id="windows"></a>
+<details>
+<summary><h2>🪟 Windows</h2></summary>
+
+### Option 1 (Easiest): Download the `.exe`
+
+1. Go to the [latest release](https://github.com/OscarDogar/Platzi-Download/releases/latest) and download the Windows executable.
+
+```text
+Platzi.Download.exe
+```
+2. Create a `.env` file in the same folder as the compose file and add your **Platzi session cookie** and **course URL**. You can check the [Environment File Configuration](#env-file) section for more details.
+
+> You do not need to install Python when using the `.exe`.
+
+> 📦 **Why is the `.exe` file large?**  
+> The executable includes the required binaries for **FFmpeg**, **FFprobe**, and **yt-dlp**, so you do not need to install them separately.
+
+> 💡 **Recommended:** Run the `.exe` from a terminal instead of double-clicking it. If you double-click the executable, the window may close automatically when the download finishes or when an error occurs.
+
+Run it from **PowerShell** or **Command Prompt**:
+
+```powershell
+.\Platzi.Download.exe
+```
+
+Or open a terminal inside the folder:
+
+```text
+Right-click inside the folder → Open in Terminal
+```
+
+This allows you to see the download progress, final output, and any errors before closing the terminal.
+
+### Option 2: Clone the repository
+
+```powershell
+git clone https://github.com/OscarDogar/Platzi-Download.git
+cd Platzi-Download
+```
+
+Create a virtual environment:
+
+```powershell
+py -3.12 -m venv .venv
+.venv\Scripts\activate
+```
+
+Install dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+Run:
+
+```powershell
+python src/main.py
+```
+
+</details>
+
+<a id="docker"></a>
+<details>
+<summary><h2>🐳 Docker</h2></summary>
+
+The official Docker image is available on GitHub Container Registry:
+
+1. Download the image from https://github.com/OscarDogar/Platzi-Download/pkgs/container/platzi-download
+2. Create a `.env` file in the same folder as the compose file and add your **Platzi session cookie** and **course URL**. You can check the [Environment File Configuration](#env-file) section for more details.
+
+### Docker Compose
+
+```yaml
+services:
+  platzi-download:
+    container_name: Platzi-Download
+    image: ghcr.io/oscardogar/platzi-download:latest
+    user: "${UID:-1000}:${GID:-1000}"
+
+    volumes:
+      - /your/path/:/app/Videos
+
+    env_file:
+      - .env
+```
+
+Run:
+
+```bash
+docker compose up
+```
+
+<details>
+<summary><b>Configure Docker without a separate .env file</b></summary>
+
+```yaml
+services:
+  platzi-download:
+    container_name: Platzi-Download
+    image: ghcr.io/oscardogar/platzi-download:latest
+    user: "${UID:-1000}:${GID:-1000}"
+
+    volumes:
+      - /your/path/:/app/Videos
+
+    environment:
+      s: "your_cookie_here"
+      COURSE_URL: "https://platzi.com/cursos/python/"
+
+      VIDEO_DOWNLOAD_MAX_PARALLEL: "1"
+      VIDEO_DOWNLOAD_BATCH_SIZE: "30"
+      VIDEO_DOWNLOAD_COOLDOWN: "10"
+      VIDEO_DOWNLOAD_START_DELAY: "0.5"
+      VIDEO_DOWNLOAD_LIMIT_RATE: "100M"
+      VIDEO_DOWNLOAD_CONCURRENT_FRAGMENTS: "3"
+      VIDEO_DOWNLOAD_FRAGMENT_RETRIES: "20"
+      VIDEO_DOWNLOAD_RETRIES: "20"
+      VIDEO_DOWNLOAD_RETRY_SLEEP: "exp=1:20"
+      VIDEO_DOWNLOAD_SLEEP_REQUESTS: "0"
+      KEEP_TMP_FILES: "N"
+      DOWNLOAD_RESOURCES: "Y"
+      SHOW_DOWNLOAD_LOGS: "N"
+      LECTURES_FORMAT_DOWNLOAD: "pdf"
+      COURSE_NAME_DATE_FORMAT: "%Y"
+```
+
+</details>
+
+<details>
+<summary><b>Build the Docker image manually</b></summary>
+
+```bash
+docker build -t Platzi-Download .
+```
+
+```bash
+docker run --rm \
+  --env-file .env \
+  -v "$PWD/Videos:/app/Videos" \
+  Platzi-Download
+```
+
+</details>
+
+</details>
+
+---
+
+<a id="cookie"></a>
+<details>
+<summary><h2>🔐 How to Get Your Cookie (Required Setup)</h2></summary>
 
 This project requires a valid **Platzi session cookie** to access course content.
 
@@ -214,7 +314,13 @@ s=ydioioapokxasoijqweopksdopic
 
 If you are logged out frequently, just re-copy the `s` cookie from DevTools and update your `.env` file.
 
-# ⚙️ Configuration
+</details>
+
+---
+
+<a id="env-file"></a>
+<details>
+<summary><h2>⚙️ Environment File Configuration</h2></summary>
 
 All configuration is handled via `.env`.
 
@@ -297,115 +403,55 @@ SHOW_DOWNLOAD_LOGS=N
 LECTURES_FORMAT_DOWNLOAD=pdf
 COURSE_NAME_DATE_FORMAT=%Y
 ```
-
-# 🐳 Docker Usage
-
-## Compose
-
-```yaml
-services:
-  Platzi-Download:
-    container_name: Platzi-Download
-    image: ghcr.io/oscardogar/platzi-download:latest
-    user: "${UID:-1000}:${GID:-1000}"
-    volumes:
-      - /your/path/:/app/Videos
-    env_file:
-      - .env
-```
-
-You can configure everything directly inside `docker-compose.yml` without using a separate `.env` file.
-Just copy the compose file below, update the required values (such as `your_cookie_here`, `COURSE_URL`, and the volume path):
-
-```yaml
-services:
-  Platzi-Download:
-    container_name: Platzi-Download
-    image: ghcr.io/oscardogar/platzi-download:latest
-    user: "${UID:-1000}:${GID:-1000}"
-
-    volumes:
-      - /your/path/:/app/Videos
-
-    environment:
-      # Required
-      s: "your_cookie_here"
-
-      # Required
-      # Supports courses and routes (comma-separated)
-      COURSE_URL: "https://platzi.com/ruta/administracion-de-servidores-linux/,https://platzi.com/cursos/python/"
-
-      # Optional (defaults shown below)
-      VIDEO_DOWNLOAD_MAX_PARALLEL: "1"
-      VIDEO_DOWNLOAD_BATCH_SIZE: "30"
-      VIDEO_DOWNLOAD_COOLDOWN: "10"
-      VIDEO_DOWNLOAD_START_DELAY: "0.5"
-      VIDEO_DOWNLOAD_LIMIT_RATE: "100M"
-
-      # Optional (defaults shown below)
-      VIDEO_DOWNLOAD_CONCURRENT_FRAGMENTS: "3"
-      VIDEO_DOWNLOAD_FRAGMENT_RETRIES: "20"
-      VIDEO_DOWNLOAD_RETRIES: "20"
-
-      # Optional (defaults shown below)
-      VIDEO_DOWNLOAD_RETRY_SLEEP: "exp=1:20"
-      VIDEO_DOWNLOAD_SLEEP_REQUESTS: "0"
-
-      # Optional
-      KEEP_TMP_FILES: "N"
-
-      # Optional
-      DOWNLOAD_RESOURCES: "Y"
-
-      # Optional
-      SHOW_DOWNLOAD_LOGS: "N"
-
-      # Optional
-      LECTURES_FORMAT_DOWNLOAD: "pdf"
-
-      # Optional
-      COURSE_NAME_DATE_FORMAT: "%Y"
-```
-
-Run:
-
-```bash
-docker compose up
-```
+</details>
 
 ---
 
-## Build manually
+</details>
 
-```bash
-docker build -t Platzi-Download .
-docker run --rm --env-file .env -v "$PWD/Videos:/app/Videos" Platzi-Download
+<a id="usage"></a>
+<details>
+<summary><h2>🚀 Usage</h2></summary>
+
+## Single Course
+
+```env
+COURSE_URL=https://platzi.com/cursos/python/
 ```
 
----
+## Multiple Courses
 
-# 🚀 Usage
-
-```bash
-python src/main.py
+```env
+COURSE_URL=https://platzi.com/cursos/python/,https://platzi.com/cursos/docker/
 ```
 
-Supports multiple courses and routes (comma-separated):
+## Complete Route
 
-```txt
-# Multiple courses
-COURSE_URL=https://course1,https://course2
-
-# Complete route
+```env
 COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/
-
-# Mix routes and courses
-COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/,https://course1
 ```
+
+## Mix Courses and Routes
+
+```env
+COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/,https://platzi.com/cursos/python/
+```
+
+The downloader automatically detects whether each URL is a course or a route.
+
+For routes, it will:
+
+1. Extract every course in the route.
+2. Remove duplicate courses.
+3. Download each course sequentially.
+
+</details>
 
 ---
 
-# 📤 Output Structure
+<a id="output-structure"></a>
+<details>
+<summary><h2>📤 Output Structure</h2></summary>
 
 ```
 Videos/
@@ -439,17 +485,9 @@ Videos/
     │
     └── ...
 ```
+</details>
 
-# 💡 Key Features
-
-- ⚡ Async scraping pipeline
-- 🎥 yt-dlp optimized downloads
-- 🔁 Retry & recovery system
-- 📦 Batch + cooldown control
-- 🧠 Metadata extraction engine
-- 🧾 Course documentation generator
-- 🐳 Docker-ready deployment
-- 🗂️ Automatic Platzi Route support (downloads every course in a route)
+---
 
 # 🤝 Contributing
 
