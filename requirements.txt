@@ -21,7 +21,7 @@ encutils==1.0.0
 frozenlist==1.8.0
 greenlet==3.5.5
 html5lib==1.1
-idna==3.18
+idna==3.19
 lxml==6.1.1
 Markdown==3.10.3
 markdown-it-py==4.2.0
