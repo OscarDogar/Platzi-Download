@@ -37,7 +37,7 @@ propcache==0.5.2
 pycparser==3.0
 pyee==13.0.1
 pyfiglet==1.0.4
-Pygments==2.20.0
+Pygments==2.21.0
 pyHanko==0.36.2
 pyhanko-certvalidator==0.31.4
 pypdf==6.16.1
