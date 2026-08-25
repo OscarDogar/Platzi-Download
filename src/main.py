@@ -77,7 +77,7 @@ def process_course(url: str) -> None:
     openVideoLinks()
     # 4. Download resources
     if config.DOWNLOAD_RESOURCES.lower() == "y":
-        from downloadResourses import download_resources
+        from download_resources import download_resources
 
         download_resources()
     # 5. Download videos
