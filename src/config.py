@@ -3,6 +3,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from dedupeUrls import parse_course_urls
 
 # Headers
 headers = {
@@ -64,15 +65,14 @@ except KeyError:
     raise RuntimeError("COOKIE environment variable is not set")
 
 COURSE_URL = os.environ.get("COURSE_URL")
-# Split on commas and/or whitespace so a URL-per-line list in .env works
 if COURSE_URL:
-    COURSE_URL = [
-        url.strip()
-        for url in COURSE_URL.replace(",", " ").split()
-        if url.strip()
-    ]
+    COURSE_URL = parse_course_urls(COURSE_URL)
+    if not COURSE_URL:
+        raise RuntimeError("COURSE_URL environment variable is not set")
 else:
     raise RuntimeError("COURSE_URL environment variable is not set")
+
+ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
 
 COURSE_ID = None
 

@@ -20,6 +20,7 @@ The script expects the following modules to be available:
     - downloadVideos: For downloading video files
     - downloadResourses: For downloading course resources (optional)
     - utils: For utility functions (counting downloads, cleaning temporary files)
+    - dedupeUrls: For unique COURSE_URL entries before processing
 
 Exit Behavior:
     - Prints success message if all videos are downloaded
@@ -38,6 +39,23 @@ import config
 from getVideosLink import openVideoLinks
 from downloadVideos import download_videos
 from utils import clickable_link, count_download_videos, delete_tmp_files, menu
+from dedupeUrls import persist_deduped_course_urls
+
+
+def _dedupe_course_urls() -> None:
+    """Drop duplicate COURSE_URL entries and persist the unique list to .env."""
+    env_path = config.ENV_PATH
+    if not env_path.is_file():
+        return
+    try:
+        unique, duplicates, wrote = persist_deduped_course_urls(env_path)
+    except ValueError:
+        return
+    config.COURSE_URL = unique
+    if duplicates:
+        print(f"\n♻️  Removed {duplicates} duplicate course URL(s). {len(unique)} unique left.")
+        if wrote:
+            print(f"   Updated {env_path}")
 
 
 def process_course(url: str) -> None:
@@ -91,6 +109,7 @@ def main() -> None:
     try:
         menu()
         config.validate_config()
+        _dedupe_course_urls()
         for url in config.COURSE_URL:
             if is_route_url(url):
                 process_route(url)
