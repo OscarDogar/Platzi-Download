@@ -57,5 +57,5 @@ urllib3==2.7.0
 webencodings==0.6.1
 xhtml2pdf==0.2.17
 yarl==1.24.5
-yt-dlp==2026.7.4
+yt-dlp==2026.8.19
 zopfli==0.4.3
