@@ -50,7 +50,8 @@ You can download:
 - ✅ A single course
 - ✅ Multiple courses
 - ✅ A complete Platzi Route
-  💙 Special thanks to **[@a-peirogon](https://github.com/a-peirogon)** for contributing the Platzi Route implementation.
+- 💙 Special thanks to **[@a-peirogon](https://github.com/a-peirogon)** for contributing the Platzi Route implementation.
+- 💙 Special thanks to **[@svaldivia12](https://github.com/svaldivia12)** for adding multi-line COURSE_URL support and duplicate URL removal.
 
 # 📦 Requirements
 
@@ -407,45 +408,42 @@ COURSE_NAME_DATE_FORMAT=%Y
 
 ---
 
-</details>
-
 <a id="usage"></a>
+
 <details>
+
 <summary><h2>🚀 Usage</h2></summary>
 
-## Single Course
+Configure course or route URLs in the `.env` file using `COURSE_URL`.
+
+### Single URL
 
 ```env
 COURSE_URL=https://platzi.com/cursos/python/
 ```
 
-## Multiple Courses
+### Multiple URLs
+
+URLs can be separated with commas:
 
 ```env
-COURSE_URL=https://platzi.com/cursos/python/,https://platzi.com/cursos/docker/
+COURSE_URL=https://platzi.com/cursos/python/,https://platzi.com/cursos/docker/,https://platzi.com/ruta/administracion-de-servidores-linux/
 ```
 
-## Complete Route
+Or placed on separate lines. **When using multiple lines, the value must be enclosed in quotes:**
 
 ```env
-COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/
+COURSE_URL="
+https://platzi.com/cursos/python/
+https://platzi.com/cursos/docker/
+https://platzi.com/ruta/administracion-de-servidores-linux/
+"
 ```
 
-## Mix Courses and Routes
-
-```env
-COURSE_URL=https://platzi.com/ruta/administracion-de-servidores-linux/,https://platzi.com/cursos/python/
-```
-
-The downloader automatically detects whether each URL is a course or a route.
-
-For routes, it will:
-
-1. Extract every course in the route.
-2. Remove duplicate courses.
-3. Download each course sequentially.
+You can use courses, routes, or a mix of both. The downloader automatically detects each URL. Routes are expanded into their courses, duplicates are removed, and courses are downloaded sequentially.
 
 </details>
+
 
 ---
 
