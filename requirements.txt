@@ -40,7 +40,7 @@ pyfiglet==1.0.4
 Pygments==2.21.0
 pyHanko==0.36.2
 pyhanko-certvalidator==0.31.4
-pypdf==6.16.1
+pypdf==6.16.2
 python-bidi==0.6.11
 python-dotenv==1.2.3
 reportlab==4.5.1
