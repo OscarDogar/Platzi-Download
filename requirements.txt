@@ -15,7 +15,7 @@ cryptography==50.0.0
 cssselect==1.5.0
 cssselect2==0.9.0
 cssutils==2.15.0
-curl_cffi==0.16.1
+curl_cffi==0.16.2
 dotenv==0.9.9
 encutils==1.0.0
 frozenlist==1.8.0
