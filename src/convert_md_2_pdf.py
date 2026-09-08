@@ -104,8 +104,8 @@ def convert_html_to_pdf(md_content, filepath):
             /* Images */
             img {{
                 display: block;
+                width: 17cm;
                 margin: 10px auto;
-                max-width: 100%;
             }}
 
             /* Links */
