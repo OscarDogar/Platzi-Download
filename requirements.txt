@@ -6,7 +6,7 @@ asn1crypto==1.5.1
 attrs==26.1.0
 beautifulsoup4==4.15.0
 brotli==1.2.0
-cachetools==7.1.7
+cachetools==7.1.8
 certifi==2026.7.22
 cffi==2.1.1
 chardet==7.6.0
