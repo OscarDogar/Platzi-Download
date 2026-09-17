@@ -15,7 +15,7 @@ Environment Variables:
 
 The script expects the following modules to be available:
     - extractCourseLinks: For extracting course links
-    - openLinks: For asynchronously fetching and caching HTML
+    - open_links: For asynchronously fetching and caching HTML
     - getVideosLink: For parsing video links from HTML
     - downloadVideos: For downloading video files
     - downloadResourses: For downloading course resources (optional)
@@ -32,14 +32,15 @@ Exit Behavior:
 import asyncio
 import sys
 import os
-from extractCourseLinks import getLinks
-from extractRouteLinks import is_route_url, getRouteCourseLinks
-from openLinks import openLinks
+from extract_course_links import get_links
+from extract_route_links import is_route_url, get_route_course_links
+from open_links import open_links
 import config
-from getVideosLink import openVideoLinks
-from downloadVideos import download_videos
+from get_videos_link import open_video_links
+from download_videos import download_videos
 from utils import clickable_link, count_download_videos, delete_tmp_files, menu
-from dedupeUrls import persist_deduped_course_urls
+from dedupe_urls import persist_deduped_course_urls
+from download_resources import download_resources
 
 
 def _dedupe_course_urls() -> None:
@@ -70,15 +71,13 @@ def process_course(url: str) -> None:
     """
     print(f"\n📚 Processing course: {url}")
     # 1. Extract course links
-    names, links = getLinks(url)
+    names, links = get_links(url)
     # 2. Fetch HTML responses
-    asyncio.run(openLinks(links, names))
+    asyncio.run(open_links(links, names))
     # 3. Extract video links
-    openVideoLinks()
+    open_video_links()
     # 4. Download resources
     if config.DOWNLOAD_RESOURCES.lower() == "y":
-        from download_resources import download_resources
-
         download_resources()
     # 5. Download videos
     download_videos()
@@ -92,8 +91,13 @@ def process_course(url: str) -> None:
 
 
 def process_route(url: str) -> None:
+    """Process every course belonging to a route URL.
+
+    Args:
+        url: URL of the route whose courses should be downloaded.
+    """
     print(f"\n🛤️  Processing route: {url}")
-    route_name, course_urls = getRouteCourseLinks(url)
+    route_name, course_urls = get_route_course_links(url)
     config.set_route_name(route_name)
     try:
         for course_url in course_urls:
@@ -129,7 +133,7 @@ def main() -> None:
         print(f"\n❌ RuntimeError: {error}")
     except KeyboardInterrupt:
         print("\n\n⛔ Process interrupted by user.")
-    except Exception as error:
+    except Exception as error:  # pylint: disable=broad-exception-caught
         print(f"\n❌ Unexpected error: {error}")
 
 

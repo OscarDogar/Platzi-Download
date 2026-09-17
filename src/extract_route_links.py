@@ -1,21 +1,31 @@
+
+"""Helpers for identifying Platzi routes and extracting their course links."""
+
 import os
 import re
-import requests
 from urllib.parse import urljoin
+import requests
 from bs4 import BeautifulSoup
 
 import config
-from extractCourseLinks import cleanName
-from validateHtml import verify_cookie
+from extract_course_links import clean_name
+from validate_html import verify_cookie
 
 COURSE_HREF_RE = re.compile(r'href="(/cursos/[a-zA-Z0-9\-]+/?)"')
 
 
 def is_route_url(url: str) -> bool:
+    """Return ``True`` when *url* contains a Platzi route path."""
     return "/ruta/" in url
 
 
-def getRouteCourseLinks(url: str):
+def get_route_course_links(url: str):
+    """Fetch *url* and return the route name and unique course URLs.
+
+    The configured cookies are applied to the request so authenticated route
+    pages can be read. Fetch and validation failures are reported and terminate
+    the process, matching the existing command-line behavior.
+    """
     base = "https://platzi.com"
     try:
         session = requests.Session()
@@ -34,12 +44,12 @@ def getRouteCourseLinks(url: str):
     except requests.RequestException:
         print("An exception occurred while fetching the route page.")
         os._exit(1)
-    except Exception as e:
+    except (AttributeError, TypeError, ValueError) as e:
         print(str(e))
         os._exit(1)
 
     title_tag = soup.select_one("h1")
-    route_name = cleanName(title_tag.get_text(strip=True)) if title_tag else "Ruta"
+    route_name = clean_name(title_tag.get_text(strip=True)) if title_tag else "Ruta"
 
     seen = set()
     course_urls = []

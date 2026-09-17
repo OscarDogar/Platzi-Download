@@ -1,10 +1,13 @@
+
+"""Collect and persist video links and lecture resources from HTML files."""
+
 import os
 from pathlib import Path
 import json
 import re
 import config
 from utils import extract_field
-from convertHTML2MD import convert_html_to_markdown
+from convert_html_2_md import convert_html_to_markdown
 
 
 def validate_if_video_exist_in_json(name):
@@ -28,7 +31,7 @@ def validate_if_video_exist_in_json(name):
     return False
 
 
-def getVideos():
+def get_videos():
     """
     Collect video metadata from HTML response files.
 
@@ -62,7 +65,7 @@ def getVideos():
             html = f.read()
         video_links = [v for v in video_links if v["name"] != html_file.stem]
         media_url = extract_field(html, "media_url")
-        materialId = extract_field(html, "materialId")
+        material_id = extract_field(html, "materialId")
         class_number = html_file.stem.split(".")[0]
         if media_url:
             if "m3u8" not in media_url:
@@ -87,7 +90,7 @@ def getVideos():
                 {
                     "name": html_file.stem,
                     "url": media_url,
-                    "materialId": materialId,
+                    "materialId": material_id,
                     "class_number": class_number,
                 }
             )
@@ -107,7 +110,7 @@ def getVideos():
     return video_links
 
 
-def openVideoLinks():
+def open_video_links():
     """
     Open and save video links to a file.
 
@@ -118,7 +121,7 @@ def openVideoLinks():
     Returns:
         None
     """
-    videos = getVideos()
+    videos = get_videos()
     if not videos:
         print("No new video links found.")
         return

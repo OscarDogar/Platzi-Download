@@ -1,12 +1,15 @@
-import requests
+
+"""Extract Platzi course links and metadata, and download course assets."""
+
 import os
 import re
-from bs4 import BeautifulSoup
+from datetime import datetime
 from urllib.parse import urljoin, urlparse
+from bs4 import BeautifulSoup
+import requests
 import config
 from utils import extract_field, generate_course_md
-from validateHtml import validate_html
-from datetime import datetime
+from validate_html import validate_html
 
 
 def download_image(img_url, filename):
@@ -58,7 +61,7 @@ def download_image(img_url, filename):
         print(f"Failed to download course image. Status code: {response.status_code}")
 
 
-def cleanName(name):
+def clean_name(name):
     """
     Remove invalid characters from a string to make it suitable for use as a filename.
 
@@ -73,7 +76,7 @@ def cleanName(name):
     return name.strip()
 
 
-def extractLinksFromPage(html, url):
+def extract_links_from_page(html, url):
     """
     Extract course links and metadata from a Platzi course page HTML.
 
@@ -104,10 +107,10 @@ def extractLinksFromPage(html, url):
         for a in soup.select('a[class*="ItemLink-module_ItemLink"]')
     ]
     names = [
-        cleanName(a.get_text(strip=True))
+        clean_name(a.get_text(strip=True))
         for a in soup.select('[class*="SyllabusSection-module_Item__Title"]')
     ]
-    courseName = soup.select_one("h1").get_text(strip=True)
+    course_name = soup.select_one("h1").get_text(strip=True)
     raw_date = extract_field(html, "launch_date")
     dt = None
     if raw_date:
@@ -168,14 +171,14 @@ def extractLinksFromPage(html, url):
     # get year from launch_date
     if launch_date:
         # year = launch_date.split("-")[0]
-        courseName += f" ({launch_date})"
-    if courseName:
-        config.set_dynamic_name(cleanName(courseName))
-    print(f"⬇️  Starting download: {courseName}")
+        course_name += f" ({launch_date})"
+    if course_name:
+        config.set_dynamic_name(clean_name(course_name))
+    print(f"⬇️  Starting download: {course_name}")
     os.makedirs(config.FULL_PATH, exist_ok=True)
     os.makedirs(config.FULL_PATH_LINKS, exist_ok=True)
     generate_course_md(
-        courseName,
+        course_name,
         dt.strftime("%B %d, %Y") if raw_date else None,
         description,
         level,
@@ -206,7 +209,7 @@ def extractLinksFromPage(html, url):
     return names, links
 
 
-def getLinks(url):
+def get_links(url):
     """
     Fetch course links from a Platzi course page.
 
@@ -239,10 +242,10 @@ def getLinks(url):
         response.raise_for_status()
         html = response.text
         validate_html(html)
-        return extractLinksFromPage(html, url)
-    except requests.RequestException as e:
+        return extract_links_from_page(html, url)
+    except requests.RequestException:
         print("An exception occurred while fetching the page.")
         os._exit(1)
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError) as e:
         print(str(e))
         os._exit(1)

@@ -1,3 +1,6 @@
+
+"""Helpers for downloading course page HTML from URLs with HTTP and Playwright fallbacks."""
+
 import asyncio
 import os
 import random
@@ -10,6 +13,12 @@ BATCH_SIZE = 30
 
 
 async def fetch_http(session, url, filename, semaphore):
+    """Fetch a course page over HTTP and save it to disk with retries.
+
+    Uses the configured async HTTP client, retries transient failures, and writes
+    the final HTML response to ``filename`` when the request succeeds.
+    """
+
     async with semaphore:
         for attempt in range(1, MAX_RETRIES + 1):
             try:
@@ -20,14 +29,14 @@ async def fetch_http(session, url, filename, semaphore):
                     timeout=60,
                 )
                 if response.status_code != 200:
-                    raise Exception(f"HTTP {response.status_code}")
+                    raise RuntimeError(f"HTTP {response.status_code}")
                 text = response.text
                 with open(filename, "w", encoding="utf-8") as f:
                     f.write(text)
                 if config.SHOW_DOWNLOAD_LOGS == "y":
                     print(f"[HTTP OK] {url}")
                 return {"status": "success", "url": url, "filename": filename}
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 if config.SHOW_DOWNLOAD_LOGS == "y" or attempt == MAX_RETRIES:
                     print(
                         f"[HTTP FAILED] {url} -> {e} (Attempt {attempt}/{MAX_RETRIES})"
@@ -38,22 +47,37 @@ async def fetch_http(session, url, filename, semaphore):
 
 
 async def fetch_playwright(page, url, filename):
+    """Open a page with Playwright and save the rendered HTML as fallback.
+
+    This is used when the HTTP fetch fails or when dynamic JavaScript content must
+    be rendered before capturing the final page markup.
+    """
     try:
         await page.goto(url, wait_until="domcontentloaded", timeout=60000)
         await asyncio.sleep(2)  # Respiro para JS dinámico
         html = await page.content()
         with open(filename, "w", encoding="utf-8") as f:
             f.write(html)
-        print(f"[PW RESCUE OK] {url}") if config.SHOW_DOWNLOAD_LOGS == "y" else None
+        if config.SHOW_DOWNLOAD_LOGS == "y":
+            print(f"[PW RESCUE OK] {url}")
         return "success"
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         print(f"[PW FAILED] {url} -> {e}")
         return "failed"
 
 
-async def openLinks(urls, names):
-    PATH = config.FULL_PATH_HTML
-    os.makedirs(PATH, exist_ok=True)
+async def open_links(urls, names):
+    """Download and save HTML pages for the provided URLs.
+
+    Args:
+        urls: Sequence of course page URLs to fetch.
+        names: Sequence of file names to use for each downloaded HTML document.
+
+    Returns:
+        None. Files are written to the configured HTML output directory.
+    """
+    path = config.FULL_PATH_HTML
+    os.makedirs(path, exist_ok=True)
     use_playwright_permanently = False
     sem = asyncio.Semaphore(10)
     # Inicialización diferida de Playwright
@@ -83,7 +107,7 @@ async def openLinks(urls, names):
             pending_batch = []
             for j, (url, name) in enumerate(zip(batch_urls, batch_names)):
                 idx = i + j + 1
-                filename = f"{PATH}/{idx}. {name}.html"
+                filename = f"{path}/{idx}. {name}.html"
                 if not os.path.exists(filename):
                     pending_batch.append((url, filename))
             if not pending_batch:
@@ -97,7 +121,7 @@ async def openLinks(urls, names):
                 failed_items = [r for r in results if r["status"] == "failed"]
                 if failed_items:
                     print(
-                        f"\n⚠️ {len(failed_items)} fallos detectados. Cambiando a modo playwright..."
+                        f"\n⚠️ {len(failed_items)} fallos detectados. Cambiando a modo playwright"
                     )
                     use_playwright_permanently = True
                     await init_pw()
