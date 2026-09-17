@@ -32,7 +32,10 @@ def convert_html_to_markdown(html, class_name, filepath):
     if content is None:
         if config.SHOW_DOWNLOAD_LOGS == "y":
             print(
-                f"[WARNING] Skipping conversion for {os.path.basename(filepath)}. No content found for class '{class_name}' in HTML. "
+                f"[WARNING] Skipping conversion for "
+                f"{os.path.basename(filepath)}. "
+                f"No content found for class "
+                f"'{class_name}' in HTML. "
             )
         return
     markdown_content = markdownify.markdownify(str(content), heading_style="ATX")

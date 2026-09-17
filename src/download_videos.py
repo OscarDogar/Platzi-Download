@@ -1,10 +1,17 @@
+
+"""Download Platzi videos in controlled parallel batches.
+
+The module builds ``yt-dlp`` commands, manages download processes, applies
+cooldown periods between batches, and reports downloads that did not complete.
+"""
+
 import subprocess
 import glob
 import os
-import config
 import json
 import time
 import random
+import config
 
 MAX_PARALLEL = config.VIDEO_DOWNLOAD_MAX_PARALLEL
 BATCH_SIZE = config.VIDEO_DOWNLOAD_BATCH_SIZE
@@ -27,6 +34,7 @@ ACCEPTS = [
 
 
 def generate_headers():
+    """Return randomized browser-like headers for a download request."""
     return {
         "Referer": "https://platzi.com/",
         "User-Agent": random.choice(USER_AGENTS),
@@ -35,6 +43,7 @@ def generate_headers():
 
 
 def file_exists(name):
+    """Return whether a completed video file exists for ``name``."""
     base = os.path.join(config.FULL_PATH, name)
     for ext in (".mp4", ".mkv", ".webm"):
         if os.path.exists(base + ext):
@@ -43,6 +52,7 @@ def file_exists(name):
 
 
 def build_command(url, name):
+    """Build the ``yt-dlp`` command used to download one video."""
     output_folder = config.FULL_PATH
     headers = generate_headers()
     header_args = []
@@ -85,6 +95,7 @@ def build_command(url, name):
 
 
 def run_download_command(url, name):
+    """Start a video download process and return its ``Popen`` instance."""
     print(f"[DOWNLOADING] {name}")
     cmd = build_command(url, name)
     if config.SHOW_DOWNLOAD_LOGS == "y":
@@ -98,6 +109,7 @@ def run_download_command(url, name):
 
 
 def cleanup_files():
+    """Remove temporary and subtitle files left by completed downloads."""
     output_folder = config.FULL_PATH
     patterns = (
         "*.vtt",
@@ -112,11 +124,12 @@ def cleanup_files():
         for f in glob.glob(os.path.join(output_folder, pattern)):
             try:
                 os.remove(f)
-            except:
+            except OSError:
                 pass
 
 
 def process_batch(video_list):
+    """Download videos in parallel and return videos that failed."""
     processes = []
     failed = []
     completed = 0
@@ -163,6 +176,7 @@ def process_batch(video_list):
 
 
 def download_videos():
+    """Load the video manifest, download its videos, and report failures."""
     print("\n▶️  Starting video downloads...")
     with open(config.FULL_PATH_VIDEOS, "r", encoding="utf-8") as f:
         videos = json.load(f)

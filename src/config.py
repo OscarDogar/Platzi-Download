@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from dedupeUrls import parse_course_urls
+from dedupe_urls import parse_course_urls
 
 # Headers
 headers = {

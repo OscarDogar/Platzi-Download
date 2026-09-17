@@ -1,3 +1,6 @@
+
+"""Validate Platzi HTML responses and session access."""
+
 from bs4 import BeautifulSoup
 
 
@@ -18,8 +21,11 @@ def verify_cookie(soup):
     """
     button = soup.select_one('button[data-class*="header-signup-button"]')
     if button:
-        raise Exception(
-            "COOKIE ERROR:\nInvalid cookie. Please check your .env file and update the COOKIE variable with a valid session cookie from Platzi."
+        raise ValueError(
+            "COOKIE ERROR:\n"
+            "Invalid cookie. Please check your .env file and "
+            "update the COOKIE variable with a valid session "
+            "cookie from Platzi."
         )
 
 
@@ -38,8 +44,11 @@ def verify_course_page(soup):
     """
     h1 = soup.select_one('h1[class*="CourseHeader_CourseHeader__Title"]')
     if not h1:
-        raise Exception(
-            "URL ERROR:\nThe provided URL does not correspond to a valid course page. Please check your COURSE_URL variable with a valid Platzi course URL."
+        raise ValueError(
+            "URL ERROR:\n"
+            "The provided URL does not correspond to a valid course page. "
+            "Please check your COURSE_URL variable with a valid Platzi "
+            "course URL."
         )
 
 
@@ -56,12 +65,15 @@ def verify_plan(soup):
         soup: BeautifulSoup object representing the HTML content to validate.
 
     Raises:
-        Exception: If locked-content indicators are found, meaning access is restricted.
+        PermissionError: If locked-content indicators are found, meaning access
+            is restricted.
     """
     div = soup.select_one('div[class*="ItemLockIndicator"]')
     if div:
-        raise Exception(
-            "ACCESS ERROR:\nYour account does not have access to this course's content. Please check your subscription status on Platzi."
+        raise PermissionError(
+            "ACCESS ERROR:\n"
+            "Your account does not have access to this course's content. "
+            "Please check your subscription status on Platzi."
         )
 
 
@@ -89,10 +101,10 @@ def validate_html(html: str):
         Exception: Propagates any exception raised by the underlying validators.
     """
     soup = BeautifulSoup(html, "html.parser")
-    VALIDATIONS = [
+    validations = [
         verify_cookie,
         verify_course_page,
         #verify_plan, # TODO: Change this because some courses take a while to fully load
     ]
-    for validation in VALIDATIONS:
+    for validation in validations:
         validation(soup)
