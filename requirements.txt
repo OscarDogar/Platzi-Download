@@ -55,7 +55,7 @@ tzlocal==5.4.4
 uritools==6.1.3
 urllib3==2.7.0
 webencodings==0.6.1
-xhtml2pdf==0.2.18
+xhtml2pdf==0.2.20
 yarl==1.24.5
 yt-dlp==2026.8.19
 zopfli==0.4.3
