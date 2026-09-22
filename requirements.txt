@@ -19,7 +19,7 @@ curl_cffi==0.16.3
 dotenv==0.9.9
 encutils==1.0.0
 frozenlist==1.8.0
-greenlet==3.5.5
+greenlet==3.5.6
 html5lib==1.1
 idna==3.19
 lxml==6.1.3
