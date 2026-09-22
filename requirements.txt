@@ -33,7 +33,7 @@ oscrypto==1.3.0
 pillow==12.3.0
 playwright==1.62.0
 premailer==3.10.0
-propcache==0.5.2
+propcache==0.5.4
 pycparser==3.0
 pyee==13.0.1
 pyfiglet==1.0.4
