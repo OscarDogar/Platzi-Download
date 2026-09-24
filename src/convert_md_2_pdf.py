@@ -6,6 +6,20 @@ from xhtml2pdf import pisa
 BACKGROUND_COLOR = "#fdfdfd"
 COLOR = "#1F1F1F"
 
+def normalize_for_pdf(text):
+    replacements = {
+        "\u2010": "-",  # hyphen
+        "\u2011": "-",  # non-breaking hyphen
+        "\u2012": "-",  # figure dash
+        "\u2013": "-",  # en dash
+        "\u2014": "-",  # em dash
+        "\u2212": "-",  # minus sign
+    }
+
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+
+    return text
 
 def convert_html_to_pdf(md_content, filepath):
     """Convert Markdown content to a styled A4 PDF and save it to a file.
@@ -14,6 +28,7 @@ def convert_html_to_pdf(md_content, filepath):
         md_content: Markdown source to convert.
         filepath: Destination path for the generated PDF.
     """
+    md_content = normalize_for_pdf(md_content)
     html_content = markdown(md_content)
 
     styled_html = f"""
