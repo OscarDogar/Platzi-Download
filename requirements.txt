@@ -34,7 +34,7 @@ pillow==12.3.0
 playwright==1.63.0
 premailer==3.10.0
 propcache==0.5.4
-pycparser==3.0
+pycparser==3.11
 pyee==13.0.1
 pyfiglet==1.0.4
 Pygments==2.21.0
