@@ -6,7 +6,9 @@ from xhtml2pdf import pisa
 BACKGROUND_COLOR = "#fdfdfd"
 COLOR = "#1F1F1F"
 
+
 def normalize_for_pdf(text):
+    """Replace PDF-incompatible punctuation with safe ASCII equivalents."""
     replacements = {
         "\u2010": "-",  # hyphen
         "\u2011": "-",  # non-breaking hyphen
@@ -14,12 +16,14 @@ def normalize_for_pdf(text):
         "\u2013": "-",  # en dash
         "\u2014": "-",  # em dash
         "\u2212": "-",  # minus sign
+        "\u2192": "->",  # right arrow
     }
 
     for old, new in replacements.items():
         text = text.replace(old, new)
 
     return text
+
 
 def convert_html_to_pdf(md_content, filepath):
     """Convert Markdown content to a styled A4 PDF and save it to a file.
