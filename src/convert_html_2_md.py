@@ -38,6 +38,8 @@ def convert_html_to_markdown(html, class_name, filepath):
                 f"'{class_name}' in HTML. "
             )
         return
+    for button in content.select('button[aria-label="Copiar resumen"]'):
+        button.decompose()
     markdown_content = markdownify.markdownify(str(content), heading_style="ATX")
     # check if the directory exists, if not create it
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
