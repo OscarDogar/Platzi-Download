@@ -7,7 +7,7 @@ attrs==26.1.0
 beautifulsoup4==4.15.0
 brotli==1.2.0
 cachetools==7.2.3
-certifi==2026.10.19
+certifi==2026.10.23
 cffi==2.1.1
 chardet==7.6.0
 charset-normalizer==3.5.2
@@ -40,7 +40,7 @@ pyfiglet==1.0.4
 Pygments==2.21.0
 pyHanko==0.37.0
 pyhanko-certvalidator==0.32.1
-pypdf==6.21.1
+pypdf==6.21.2
 python-bidi==0.6.11
 python-dotenv==1.2.4
 reportlab==4.5.1
