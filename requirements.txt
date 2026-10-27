@@ -51,7 +51,7 @@ soupsieve==3.0.3
 svglib==2.3.0
 tinycss2==1.5.1
 typing_extensions==4.16.0
-tzlocal==5.4.4
+tzlocal==5.4.5
 uritools==6.1.3
 urllib3==2.8.0
 webencodings==0.6.1
