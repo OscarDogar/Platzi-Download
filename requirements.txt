@@ -43,7 +43,7 @@ pyhanko-certvalidator==0.32.1
 pypdf==6.21.2
 python-bidi==0.6.12
 python-dotenv==1.2.4
-reportlab==4.5.1
+reportlab==5.1.0
 requests==2.34.2
 rich==15.0.0
 six==1.17.0
