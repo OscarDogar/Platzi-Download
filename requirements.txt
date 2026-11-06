@@ -39,7 +39,7 @@ pyee==13.0.1
 pyfiglet==1.0.4
 Pygments==2.21.0
 pyHanko==0.37.0
-pyhanko-certvalidator==0.32.1
+pyhanko-certvalidator==0.33.0
 pypdf==6.21.4
 python-bidi==0.6.12
 python-dotenv==1.2.4
