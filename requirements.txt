@@ -35,7 +35,7 @@ playwright==1.64.1
 premailer==3.10.0
 propcache==0.5.4
 pycparser==3.12
-pyee==13.0.1
+pyee==16.0.1
 pyfiglet==1.0.4
 Pygments==2.21.0
 pyHanko==0.37.0
