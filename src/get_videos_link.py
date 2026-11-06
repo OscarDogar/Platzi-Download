@@ -104,7 +104,7 @@ def get_videos():
             os.remove(html_file)
         convert_html_to_markdown(
             html,
-            "InlineResourcesV2__section__",
+            "InlineResources__section_",
             f"{config.FULL_PATH_RESOURCES}/" f"{class_number}. Class Summary Lecture",
         )
     return video_links

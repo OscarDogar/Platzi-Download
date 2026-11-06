@@ -119,19 +119,19 @@ def extract_links_from_page(html, url):
     launch_date = dt.strftime(config.COURSE_NAME_DATE_FORMAT) if dt else None
     # launch_date = raw_date.split("T")[0] if raw_date else None
     description = soup.select_one(
-        'p[class*="CourseInfo_CourseInfo__Description"]'
+        'p[class*="CourseInfo__Description"]'
     ).get_text(strip=True)
     #! THE ORDER OF THE TAGS IS NOT GUARANTEED, SO THIS MAY CAUSE ISSUES IN THE FUTURE
-    tags = soup.select('div[class*="CourseTags_CourseTags__Tag"]')
+    tags = soup.select('div[class*="CourseTags__Tag"]')
 
     level = tags[0].get_text(strip=True) if len(tags) > 0 else None
     number_of_classes = tags[1].get_text(strip=True) if len(tags) > 1 else None
     duration_content = tags[2].get_text(strip=True) if len(tags) > 2 else None
-    professors_tag = soup.select_one('p[class*="CourseTeacher_CourseTeacher__Name"]')
+    professors_tag = soup.select_one('p[class*="CourseTeacher__Name"]')
     professors = professors_tag.get_text(strip=True) if professors_tag else None
 
     professors_img_tag = soup.select_one(
-        'img[class*="CourseTeacher_CourseTeacher__Image"]'
+        'img[class*="CourseTeacher__Image"]'
     )
     professors_img = (
         professors_img_tag["src"]
@@ -140,7 +140,7 @@ def extract_links_from_page(html, url):
     )
 
     professors_description_tag = soup.select_one(
-        'p[class*="CourseTeacher_CourseTeacher__Description"]'
+        'p[class*="CourseTeacher__Description"]'
     )
     professors_description = (
         professors_description_tag.get_text(strip=True)
@@ -149,11 +149,11 @@ def extract_links_from_page(html, url):
     )
 
     reviews_tag = soup.select_one(
-        'span[class*="CourseMetrics_CourseMetrics__Stars__Number"]'
+        'span[class*="CourseMetrics__Stars__Number"]'
     )
     reviews = reviews_tag.get_text(strip=True) if reviews_tag else None
     opinions_tag = soup.select_one(
-        'span[class*="CourseMetrics_CourseMetrics__Opinions__Text"]'
+        'span[class*="CourseMetrics__Opinions__Text"]'
     )
     if opinions_tag:
         raw_opinions = opinions_tag.get_text(strip=True)

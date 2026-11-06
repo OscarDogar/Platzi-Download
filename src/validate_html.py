@@ -42,7 +42,7 @@ def verify_course_page(soup):
     Raises:
         Exception: If the page does not appear to be a valid course page.
     """
-    h1 = soup.select_one('h1[class*="CourseHeader_CourseHeader__Title"]')
+    h1 = soup.select_one('h1[class*="CourseHeader__Title"]')
     if not h1:
         raise ValueError(
             "URL ERROR:\n"

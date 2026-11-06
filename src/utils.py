@@ -1,5 +1,7 @@
 import os
 import shutil
+
+import json
 import config
 import re
 from pathlib import Path
@@ -8,19 +10,121 @@ from textwrap import dedent
 
 
 def extract_field(text, field):
-    try:
-        matches = re.findall(r'push\(\[\d+,"(.*?)"\]\)', text)
-        joined = "".join(matches)
+    """Extract a string field from HTML or serialized React server data."""
+    search_texts = []
 
-        # This codec is much more lenient with truncated backslashes
-        decoded = joined.encode("utf-8").decode("unicode_escape", errors="ignore")
+    # Newer Platzi pages split the serialized RSC stream across vinext
+    # ``rsc.push(...)`` calls. Decode string arguments individually, then join
+    # them before looking for fields so a push boundary can fall inside a value.
+    vinext_chunks = []
+    push_pattern = re.compile(r"\.rsc\.push\(")
+    for push in push_pattern.finditer(text):
+        script_end = text.find("</script>", push.end())
+        if script_end == -1:
+            script_end = len(text)
 
-        # Standard regex search
-        match = re.search(rf'"{field}":"([^"]+)"', decoded)
-        return match.group(1) if match else None
-    except Exception as e:
-        print(f"Error: {e}")
+        payload = text[push.end() : script_end]
+        argument = _first_js_call_argument(payload)
+        if argument is None:
+            continue
+
+        chunk = _decode_rsc_push_argument(argument)
+        if chunk is not None:
+            vinext_chunks.append(chunk)
+    if vinext_chunks:
+        search_texts.append("".join(vinext_chunks))
+
+    chunk_pattern = re.compile(
+        r'self\.__next_f\.push\(\[\d+,("(?:\\.|[^"\\])*")\]\)'
+    )
+    chunks = []
+    for chunk in chunk_pattern.finditer(text):
+        try:
+            chunks.append(json.loads(chunk.group(1)))
+        except json.JSONDecodeError:
+            continue
+    if chunks:
+        search_texts.append("".join(chunks))
+    search_texts.append(text)
+
+    quoted_key = rf'(?:\\)*"{re.escape(field)}(?:\\)*"'
+    unquoted_key = re.escape(field)
+    pattern = (
+        rf'(?:{quoted_key}|{unquoted_key})'
+        rf'\s*:\s*(?:\\)*"'
+        rf'((?:\\.|[^"\\])*?)'
+        rf'(?:\\)*"'
+    )
+
+    for candidate in search_texts:
+        match = re.search(pattern, candidate)
+        if not match:
+            continue
+        value = match.group(1)
+        try:
+            return json.loads(f'"{value}"')
+        except json.JSONDecodeError:
+            return value
+    return None
+
+
+def _first_js_call_argument(payload):
+    """Read the first argument up to its matching call parenthesis."""
+    depth = 1
+    quote = None
+    escaped = False
+
+    for index, char in enumerate(payload):
+        if quote:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+
+        if char in ('"', "'", "`"):
+            quote = char
+        elif char in "([{":
+            depth += 1
+        elif char in ")]}":
+            depth -= 1
+            if depth == 0:
+                return payload[:index].strip()
+
+    # Some streamed chunks are intentionally incomplete at the script edge.
+    # Return the available fragment so a later push can complete the stream.
+    return payload.strip() or None
+
+
+def _decode_rsc_push_argument(argument):
+    """Decode a vinext push string while retaining incomplete stream pieces."""
+    if not argument:
         return None
+
+    try:
+        decoded = json.loads(argument)
+    except json.JSONDecodeError:
+        # A push can end mid-string when the server splits a stream. Preserve
+        # its contents and decode any complete JSON escapes where possible.
+        fragment = argument
+        if fragment.endswith(")"):
+            fragment = fragment[:-1].rstrip()
+        if fragment.startswith('"'):
+            fragment = fragment[1:]
+        if fragment.endswith('"'):
+            fragment = fragment[:-1]
+        try:
+            return json.loads(f'"{fragment}"')
+        except json.JSONDecodeError:
+            return fragment
+
+    if isinstance(decoded, str):
+        return decoded
+    if isinstance(decoded, (dict, list)):
+        return json.dumps(decoded, ensure_ascii=False, separators=(",", ":"))
+    return str(decoded)
 
 
 def count_files_in_folder(folder_path, extension):
