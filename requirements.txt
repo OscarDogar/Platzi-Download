@@ -38,7 +38,7 @@ pycparser==3.12
 pyee==13.0.1
 pyfiglet==1.0.4
 Pygments==2.21.0
-pyHanko==0.38.0
+pyHanko==0.38.1
 pyhanko-certvalidator==0.33.0
 pypdf==6.21.4
 python-bidi==0.6.12
