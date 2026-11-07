@@ -98,7 +98,7 @@ def get_videos():
             # Check if it is a lecture
             convert_html_to_markdown(
                 html,
-                "Lecture_Lecture",
+                "_Markdown_",
                 f"{config.FULL_PATH}/{html_file.stem} Class Lecture",
             )
             os.remove(html_file)
