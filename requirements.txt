@@ -52,7 +52,7 @@ svglib==2.3.2
 tinycss2==1.5.1
 typing_extensions==4.16.0
 tzlocal==5.4.5
-uritools==6.1.4
+uritools==6.1.5
 urllib3==2.8.0
 webencodings==0.6.1
 xhtml2pdf==0.2.28
