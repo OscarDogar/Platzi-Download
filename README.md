@@ -26,6 +26,10 @@
 
 # 📌 Overview
 
+<p align="center">
+  <img src="https://i.ibb.co/3m0zrqqP/demo.gif" alt="Platzi Download demo" width="960">
+</p>
+
 **Platzi-Download** is a Python automation tool designed to download **complete Platzi courses** in a structured and scalable way.
 
 It handles everything from course parsing to video downloads and optional resources extraction.
